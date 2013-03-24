@@ -2,6 +2,8 @@
 math.randomseed( os.time() )
 math.random(); math.random(); math.random()
 
+White = {255,255,255}
+
 function round(num, idp)
   local mult = 10^(idp or 0)
   return math.floor(num * mult + 0.5) / mult

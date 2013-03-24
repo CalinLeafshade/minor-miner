@@ -31,7 +31,8 @@ local Player =
   GroundDrag = 0.93,
 	HP = 25,
 	MaxHP = 25,
-	Power = 100
+	Power = 100,
+	InvTimer = 0
 }
 
 function Player:CanSave()
@@ -369,32 +370,23 @@ function Player:Update(dt)
 	self:Animate(dt)
 	
 	self.Position.x, self.Position.y = self.Collider:center()
---    --self.Collider:move(0, 1)
---  end
---
---  if self.InvTimer > 0 and not self.Hurt then
---    self.InvTimer = self.InvTimer - 1
---  elseif self.InvTimer == 0 then
---    self.Invulnerable = false
---  end
---  
---  self.InWater = false
---  self:CheckCollisions()
--- 
---  self:Animate()
+
+  if self.InvTimer > 0 and not self.Hurt then
+    self.InvTimer = self.InvTimer - 1
+  elseif self.InvTimer == 0 then
+    self.Invulnerable = false
+  end
+
 end
 
 
 function Player:Draw()
-
-	
-	--self.Position.x = round(self.Position.x)
-	--self.Position.y = round(self.Position.y)
-	log("playerspeed", tostring(self.Velocity))
 	if self.Animation then
+		local alpha = self.Invulnerable and (math.sin(love.timer.getTime() * 60) + 1) / 2 * 255 or 255
+		local tint = Room.Current.Tint or White
+		love.graphics.setColor(tint[1],tint[2],tint[3], alpha)	
 		self.Animations[self.Animation]:Draw(self.Position:unpack())
 	end
-	--self.Collider:draw()
 end
 
 return Player
