@@ -54,7 +54,7 @@ end
 
 function Game:Init()
 	self.CWorld = HC(100, on_collide, stop_colliding)
-  self.Player = require("player")
+	self.Player = require("player")
 	self.Viewport = {x=0,y=0}
 	self.Water = require('water')
 	self.Water:Init()
@@ -62,7 +62,6 @@ function Game:Init()
 	self.Canvas = love.graphics.newCanvas(320,200)
 	self.Canvas:setFilter("nearest", "nearest")
 	self:ChangeRoom("CA8")
-	
 end
 
 function Game:CheckExits()
@@ -95,13 +94,14 @@ end
 function Game:Update(dt, focus)
   if focus and not self.Paused then
       self.Player:Update(dt)
+
+			self:CheckExits()
+			self.Water:Update(dt)
+			Room.Current:Update(dt)
 			if not self.Viewport.Locked then
 				self.Viewport.x = clamp(self.Player.Position.x - 160,0,Room.Current:Width() - 320)
 				self.Viewport.y = clamp(self.Player.Position.y - 100,0,Room.Current:Height() - 200)
 			end
-			self:CheckExits()
-			self.Water:Update(dt)
-			Room.Current:Update(dt)
   end
 end
 

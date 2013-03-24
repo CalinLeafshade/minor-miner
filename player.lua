@@ -368,6 +368,7 @@ function Player:Update(dt)
 	
 	self:Animate(dt)
 	
+	self.Position.x, self.Position.y = self.Collider:center()
 --    --self.Collider:move(0, 1)
 --  end
 --
@@ -386,7 +387,7 @@ end
 
 function Player:Draw()
 
-	self.Position.x, self.Position.y = self.Collider:center()
+	
 	--self.Position.x = round(self.Position.x)
 	--self.Position.y = round(self.Position.y)
 	log("playerspeed", tostring(self.Velocity))
