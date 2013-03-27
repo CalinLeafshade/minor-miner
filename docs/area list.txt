@@ -1,0 +1,5 @@
+Caves - denoted CA
+Ice Caverns - Denoted IC
+Sunken Cathedral - Denoted SC
+Catacombs - Denoted CT
+Petrified Forest - Denoted PF

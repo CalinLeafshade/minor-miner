@@ -1,0 +1,6 @@
+Jump height = 41 px
+Jump width = approx 100px
+double jump height = 75px
+Double jump width = approx 200px
+
+Matt's penis size = 52px
