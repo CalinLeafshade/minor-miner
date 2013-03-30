@@ -8,7 +8,9 @@ function GameState:new(slot)
   setmetatable(o, self)
   self.__index = self
 	o.Slot = slot
-	o.Room = "CA1"
+	o.Room = "CA8"
+	o.Map = {}
+	o.Visited = {}
 	return o
 end
 

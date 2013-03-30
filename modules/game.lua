@@ -1,6 +1,5 @@
 --GameModule.lua
 
-require("bloom")
 Room = require("room")
 Platform = require("platform")
 Game = require("module"):new("game")
@@ -12,11 +11,16 @@ function on_collide()
 	
 end
 
+
 function stop_colliding()
 	
 end
 
+--- Game:ChangeRoom
+-- Continued description
+-- @param param  param description 
 function Game:ChangeRoom(roomName, edge, enMult, exMult)
+
 	enMult = enMult or 0
 	exMult = exMult or 0
 	if not Room.Rooms[roomName] then
@@ -49,6 +53,16 @@ function Game:ChangeRoom(roomName, edge, enMult, exMult)
 	end
 	
 	self.Water:NewRoom()
+
+	if not self.State.Visited[Room.Current.Name] then
+		self.State.Visited[Room.Current.Name] = true
+		Room.Current:FirstEnter()
+		self.State.Map[Room.Current.Name] = {Name = Room.Current.Name, Exits = Room.Current.Exits, Width = Room.Current:Width(), Height = Room.Current:Height()}
+		
+	end
+
+	self.Player.OnGround = false
+	self.Player.Ground = nil
 	Room.Current:Enter()
 end
 
@@ -61,7 +75,6 @@ function Game:Init()
 	self.Gravity = vector.new(0,1200)
 	self.Canvas = love.graphics.newCanvas(320,200)
 	self.Canvas:setFilter("nearest", "nearest")
-	self:ChangeRoom("CA8")
 end
 
 function Game:CheckExits()
@@ -159,10 +172,12 @@ function Game:Load(slot)
 end
 
 function Game:OnKeypress(keycode)
-  if keycode == "tab" then
+ 	if keycode == "tab" then
 		ModCon:Focus(Editor)
 	elseif keycode == "l" then
 		self:Load(1)
+	elseif keycode == "m" then
+		ModCon:Focus(MapScreen)
 	end
 	
 	

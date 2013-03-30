@@ -10,6 +10,7 @@ function ZoneBanner:Init()
 end
 
 function ZoneBanner:Update(dt)
+	if not Room.Current then return end
 	if Room.Current.Zone and Room.Current.Zone ~= self.Zone then -- new zone
 		if not Game.State.Visited then
 			Game.State.Visited = {}
