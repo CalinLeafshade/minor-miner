@@ -2,19 +2,17 @@
 
 local ModCon = 
 {
-  Modules = {},
-	ByName = {}
+    Modules = {},
+    ByName = {}
 }
 
 function ModCon:Add(mod)
-  assert(mod.IsModule, "mod Must be a module")
-  --table.insert(self.Modules, mod)
-	self.ByName[mod.Name] = mod
-  self.Modules[#self.Modules + 1] = mod
-  table.sort(self.Modules, function(a,b)
+    assert(mod.IsModule, "mod Must be a module")
+    self.ByName[mod.Name] = mod
+    self.Modules[#self.Modules + 1] = mod
+    table.sort(self.Modules, function(a,b)
         return a.Priority > b.Priority 
     end)
-  
 end
 
 function ModCon:Defocus()
@@ -22,68 +20,61 @@ function ModCon:Defocus()
 end
 
 function ModCon:Focus(mod)
-  assert(mod and mod.IsModule, "mod Must be a module and not nil")
-  if self.Active then self.Active:LostFocus() end
-  self.LastActive = self.Active
-  self.Active = mod
-  self.Active:GotFocus()
+    assert(mod and mod.IsModule, "mod Must be a module and not nil")
+    if self.Active then self.Active:LostFocus() end
+    self.LastActive = self.Active
+    self.Active = mod
+    self.Active:GotFocus()
 end
 
 function ModCon:LoadModules()
-	local files = love.filesystem.enumerate("modules")
-	for _,v in ipairs(files) do
-			self:Add(love.filesystem.load("modules/" .. v)())
-	end
+    local files = love.filesystem.enumerate("modules")
+    for _,v in ipairs(files) do
+        self:Add(love.filesystem.load("modules/" .. v)())
+    end
 end
 
 function ModCon:Init()
-	self:LoadModules()
-  for i,v in ipairs(self.Modules or {}) do
-      v:Init()
-  end
-	--self:Focus(Game)
+    self:LoadModules()
+    for i,v in ipairs(self.Modules or {}) do
+        v:Init()
+    end
 end
 
 function ModCon:Update(dt)
-  for i,v in ipairs(self.Modules or {}) do
-      v:Update(dt, v == self.Active)
-  end
+    for i,v in ipairs(self.Modules or {}) do
+        v:Update(dt, v == self.Active)
+    end
 end
 
 function ModCon:LateUpdate()
-  for i,v in ipairs(self.Modules or {}) do
-      v:LateUpdate(v == self.Active)
-  end
+    for i,v in ipairs(self.Modules or {}) do
+        v:LateUpdate(v == self.Active)
+    end
 end
 
 function ModCon:LateDraw()
-  for i,v in ipairs(self.Modules or {}) do
-      v:LateDraw(v == self.Active)
-  end
+    for i,v in ipairs(self.Modules or {}) do
+        v:LateDraw(v == self.Active)
+    end
 end
 
 function ModCon:Draw()
-  for i,v in ipairs(self.Modules or {}) do
-      v:Draw(v == self.Active)
-  end
+    for i,v in ipairs(self.Modules or {}) do
+        v:Draw(v == self.Active)
+    end
 end
 
 function ModCon:OnKeypress(keycode)
-  if self.Active then
-    self.Active:OnKeypress(keycode)
-  end 
+    if self.Active then
+        self.Active:OnKeypress(keycode)
+    end 
 end
 
 function ModCon:OnClick(x,y,button)
-  if self.Active then
-    self.Active:OnClick(button, x,y)
-  end
+    if self.Active then
+        self.Active:OnClick(button, x,y)
+    end
 end
 
 return ModCon
-
---RegisterEvent("game_start", function() ModCon:Init() end)
---RegisterEvent("repeatedly_execute_always", function() ModCon:Update() ModCon:LateUpdate() ModCon:Draw() ModCon:LateDraw() end)
---RegisterEvent("on_key_press", function(key) ModCon:OnKeypress(key) end)
---RegisterEvent("on_mouse_click", function(button) ModCon:OnClick(button) end)
---
