@@ -5,10 +5,13 @@ local Water = {}
 function Water:Init()
 	self.shader = love.graphics.newPixelEffect [[
           extern number t;
+          extern Image dudv;
           vec4 effect(vec4 color, Image img, vec2 texture_coords, vec2 pixel_coords){
-             //vec2 tc = vec2(gl_FragCoord.x/320 - sin(gl_FragCoord.x/(320/16)*16)/512 + sin(t)/128, gl_FragCoord.y/200 - sin(gl_FragCoord.y/(320/16)*16)/512 + sin(t)/200);
-						vec2 tc = vec2(gl_FragCoord.x/320 - sin(gl_FragCoord.x/(320/16)*16)/512 + sin(t)/732, gl_FragCoord.y/200 - sin(gl_FragCoord.y/(320/16)*16)/512 + sin(t * 2)/920); 
-             return Texel(img, tc);
+			//vec2 tc = vec2(gl_FragCoord.x/320 - sin(gl_FragCoord.x/(320/16)*16)/512 + sin(t)/732, gl_FragCoord.y/200 - sin(gl_FragCoord.y/(320/16)*16)/512 + sin(t * 2)/920); 
+			vec4 dist = Texel(dudv,vec2(texture_coords.x + (t/64), texture_coords.y));
+			dist = dist * 2 - 1.0f;
+			vec2 tc = vec2(texture_coords.x + (dist.r / 90), texture_coords.y + (dist.g / 90));
+            return Texel(img, tc);
           }
     ]]
 	self.Rects = {}
@@ -17,6 +20,9 @@ function Water:Init()
 	self.Bubbles = {}
 	self.LastBubble = 0
 	self.Timer = 0
+	self.dudv = love.graphics.newImage("gfx/waterdudv.png")
+	self.dudv:setWrap("repeat", "clamp")
+	
 end
 
 function Water:SpawnBubble(rect,x,y)
@@ -66,11 +72,11 @@ end
 function Water:Draw()
 	
 	self.shader:send('t', love.timer.getTime())
-	
+	self.shader:send('dudv', self.dudv)
 	love.graphics.setBlendMode("additive")
 	for _,v in ipairs(self.Rects) do
 		love.graphics.setColor(121,153,171,50)
-		love.graphics.rectangle("fill",v[1] - Game.Viewport.x, v[2] - Game.Viewport.y, v[3],v[4])
+		--love.graphics.rectangle("fill",v[1] - Game.Viewport.x, v[2] - Game.Viewport.y, v[3],v[4])
 		love.graphics.line(v[1]  - Game.Viewport.x,v[2] - Game.Viewport.y,v[1] + v[3] - Game.Viewport.x, v[2] - Game.Viewport.y)
 	end
 	
