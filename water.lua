@@ -4,15 +4,14 @@ local Water = {}
 
 function Water:Init()
     self.shader = love.graphics.newPixelEffect [[
-          extern number t;
-          extern Image dudv;
-          vec4 effect(vec4 color, Image img, vec2 texture_coords, vec2 pixel_coords){
-            //vec2 tc = vec2(gl_FragCoord.x/320 - sin(gl_FragCoord.x/(320/16)*16)/512 + sin(t)/732, gl_FragCoord.y/200 - sin(gl_FragCoord.y/(320/16)*16)/512 + sin(t * 2)/920); 
+        extern number t;
+        extern Image dudv;
+        vec4 effect(vec4 color, Image img, vec2 texture_coords, vec2 pixel_coords){
             vec4 dist = Texel(dudv,vec2(texture_coords.x + (t/64), texture_coords.y));
             dist = dist * 2 - 1.0f;
             vec2 tc = vec2(texture_coords.x + (dist.r / 90), texture_coords.y + (dist.g / 90));
-            return Texel(img, tc);
-          }
+            return Texel(img, tc) - 0.05;
+        }
     ]]
     self.Rects = {}
     self.Canvas = love.graphics.newCanvas(320,200)
