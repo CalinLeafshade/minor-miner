@@ -3,14 +3,14 @@ require('datadumper')
 
 GameState = {}
 
-function GameState:new(slot)
-    o = {}
+function GameState:new(slot, o)
+    o = o or {}
     setmetatable(o, self)
     self.__index = self
     o.Slot = slot
-    o.Room = "CA8"
-    o.Map = {}
-    o.Visited = {}
+    o.Room = o.Room or"CA8"
+    o.Map = o.Map or {}
+    o.Visited = o.Visited or {}
     return o
 end
 
@@ -33,8 +33,6 @@ function GameState.Load(Slot)
     local f = "slot" .. Slot .. ".lua"
     local data = love.filesystem.load(f)
     
-    local state = data()
-    setmetatable(state, GameState)
-    state.__index = GameState
+    local state = GameState:new(Slot,data())
     return state
 end
