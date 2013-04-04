@@ -129,7 +129,7 @@ function Player:CollideWithPlatform(object, dx, dy)
             end
         end
         
-        if (self.CollVec.y > 0 and object.Mode == "allblock") then
+        if (self.CollVec.y > 0.5 and object.Mode == "allblock") then
             if self.Velocity.y < 0 then 
                 self.Velocity.y = 30 
             end
