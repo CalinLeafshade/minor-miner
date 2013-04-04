@@ -6,8 +6,9 @@ function Water:Init()
     self.shader = love.graphics.newPixelEffect [[
         extern number t;
         extern Image dudv;
-        vec4 effect(vec4 color, Image img, vec2 texture_coords, vec2 pixel_coords){
-            vec4 dist = Texel(dudv,vec2(texture_coords.x + (t/64), texture_coords.y));
+        extern vec2 camera;
+        vec4 effect(vec4 color, Image img, vec2 texture_coords, vec2 pixel_coords) {
+            vec4 dist = Texel(dudv,vec2(texture_coords.x + (t/64), texture_coords.y) + camera * 2);
             dist = dist * 2 - 1.0f;
             vec2 tc = vec2(texture_coords.x + (dist.r / 90), texture_coords.y + (dist.g / 90));
             return Texel(img, tc) - 0.05;
@@ -71,6 +72,7 @@ function Water:Draw()
     
     self.shader:send('t', love.timer.getTime())
     self.shader:send('dudv', self.dudv)
+    self.shader:send('camera', {Game.Viewport.x / Room.Current:Width(), Game.Viewport.y / Room.Current:Height()})
 
     local lg = love.graphics
 
