@@ -66,6 +66,9 @@ end
 function Water:PreDraw()
     self.oldCanvas = love.graphics.getCanvas()
     love.graphics.setCanvas(self.Canvas)
+    love.graphics.setColor(0,0,0)
+    love.graphics.rectangle("fill",0,0,320,200)
+    love.graphics.setColor(255,255,255)
 end
 
 function Water:Draw()

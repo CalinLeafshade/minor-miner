@@ -14,6 +14,7 @@ CA2:AddExit("left", "CA3")
 --funcs
 
 function CA2:Enter()
+	self.NormalMap = love.graphics.newImage("gfx/backgrounds/CA2-Normal.png")
 	if not self.Lighting then
 		self.Lighting = love.graphics.newImage("gfx/backgrounds/CA2-Lighting.png")
 	end
@@ -25,8 +26,25 @@ function CA2:Update(dt)
 	self.Timer = self.Timer + dt
 	if self.Timer > 0.1 then
 		self.Timer = self.Timer - 0.1
-		self.LightAlpha = clamp(self.LightAlpha + math.random(50) - 25,150,230)
+		self.LightAlpha = clamp(self.LightAlpha + math.random(50) - 25,25,75)
 	end
+end
+
+function CA2:DrawBackground()
+	local x,y = love.mouse.getPosition();
+	--Shaders['spotnormal']:send("lightPos", {Game.Player.Position.x,Game.Player.Position.y, 50});
+	--Shaders['spotnormal']:send("spotDir", {1,0,-1})
+	--Shaders['spotnormal']:send("spotAngle", 45.0)
+	--Shaders['spotnormal']:send("spotExp", 2.0)
+	--Shaders['spotnormal']:send("normal", self.NormalMap)
+	--Shaders['spotnormal']:send("amb", {0,0,0,1})
+	Shaders['normal']:send("light", {Game.Player.Position.x, self:Height() - Game.Player.Position.y});
+	Shaders['normal']:send("lightCol", {237/255, 222/255,182/255,1})
+	Shaders['normal']:send("normal", self.NormalMap)
+	Shaders['normal']:send("amb", {0.2,0.2,0.2,1})
+	love.graphics.setPixelEffect(Shaders['normal'])
+	love.graphics.draw(self.Background, 0,0)
+	love.graphics.setPixelEffect()
 end
 
 function CA2:PrePlayerDraw()

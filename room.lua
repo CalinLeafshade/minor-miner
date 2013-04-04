@@ -59,6 +59,10 @@ function Room:Leave()
 
 end
 
+function Room:PreBackgroundDraw()
+
+end
+
 function Room:PrePlayerDraw()
 
 end
@@ -67,9 +71,36 @@ function Room:PostPlayerDraw()
 
 end
 
+function Room:DrawBackground()
+    if self.Layers then
+        for i = 1, #self.Layers do
+            local l = self.Layers[i]
+            local x = self:Width() == 320 and 0 or lerp(0, -(l:getWidth() - 320), Game.Viewport.x / (self:Width() - 320)) + Game.Viewport.x
+            local y = self:Height() == 200 and 0 or lerp(0, -(l:getHeight() - 200), Game.Viewport.y / (self:Height() - 200)) + Game.Viewport.y
+            love.graphics.draw(l,x,y)
+            
+        end
+    end
+    love.graphics.draw(Room.Current.Background,0,0)
+end
+
 function Room:Init()
     local f = love.filesystem.exists("gfx/backgrounds/" .. self.Name .. "-Final.png") and "gfx/backgrounds/" .. self.Name .. "-Final.png" or "gfx/backgrounds/" .. self.Name .. ".png"
     self.Background = love.graphics.newImage(f)
+    if love.filesystem.exists("gfx/backgrounds/" .. self.Name .. "-Layer1.png") then
+        self.Layers = {}
+        local loop = true
+        local layerNum = 1
+        while loop do
+            local f = "gfx/backgrounds/" .. self.Name .. "-Layer" .. layerNum .. ".png"
+            if love.filesystem.exists(f) then
+                self.Layers[layerNum] = love.graphics.newImage(f)
+            else
+                loop = false
+            end
+            layerNum = layerNum + 1
+        end
+    end
     if love.filesystem.exists("gfx/backgrounds/" .. self.Name .. "-Overlay.png") then
         self.Overlay = love.graphics.newImage("gfx/backgrounds/" .. self.Name .. "-Overlay.png")
     end

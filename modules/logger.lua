@@ -1,4 +1,5 @@
 -- logger
+require("util")
 
 Logger = require('module'):new("logger")
 Logger.Priority = -999999999
@@ -23,7 +24,7 @@ function Logger:Draw()
         message = message .. v.text .. '\n'
     end
     love.graphics.setFont(self.Font)
-    love.graphics.setColor(255,255,255)
+    love.graphics.setColor(125,125,128)
     love.graphics.print(message,0,0)
 end
 

@@ -115,6 +115,7 @@ function Game:Update(dt, focus)
             self.Viewport.x = clamp(self.Player.Position.x - 160,0,Room.Current:Width() - 320)
             self.Viewport.y = clamp(self.Player.Position.y - 100,0,Room.Current:Height() - 200)
         end
+        log("viewport", "viewport: ", self.Viewport.x, self.Viewport.y)
     end
 end
 
@@ -136,12 +137,15 @@ function Game:Draw(focus)
     if self.Visible then        
         love.graphics.setCanvas(self.Canvas)
         love.graphics.clear()
+        love.graphics.setColor(0,0,0)
+        love.graphics.rectangle("fill",0,0,320,200)
         love.graphics.push()
         love.graphics.translate(-self.Viewport.x, -self.Viewport.y)
         love.graphics.setColor(255,255,255)
         self.Water:PreDraw()
         if Room.Current then
-            love.graphics.draw(Room.Current.Background,0,0)
+            Room.Current:PreBackgroundDraw()
+            Room.Current:DrawBackground()
             Room.Current:PrePlayerDraw()
             self.Player:Draw()
             Room.Current:PostPlayerDraw()
