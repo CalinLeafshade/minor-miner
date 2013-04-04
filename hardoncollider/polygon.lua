@@ -404,6 +404,7 @@ function Polygon:contains(x,y)
 	local p,q = v[#v],v[#v]
 	for i = 1, #v do
 		p,q = q,v[i]
+		if not q then return false end
 		if cut_ray(p,q) or cross_boundary(p,q) then
 			in_polygon = not in_polygon
 		end
