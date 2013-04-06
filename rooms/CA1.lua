@@ -8,7 +8,8 @@ CA1.PlatformData = {  {"allblock", 0, 198, 0, 180, 318, 180, 318, 198,   },  {"a
 CA1:AddExit("left", "CA2")
 
 function CA1:Enter()
-	self.NormalMap = love.graphics.newImage("gfx/backgrounds/CA1-Normal.png")	
+	self.NormalMap = love.graphics.newImage("gfx/backgrounds/CA1-Normal.png")
+
 end
 
 function CA1:DrawBackground()

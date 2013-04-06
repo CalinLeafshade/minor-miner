@@ -76,6 +76,8 @@ function Game:Init()
     self.Gravity = vector.new(0,1200)
     self.Canvas = love.graphics.newCanvas(320,200)
     self.Canvas:setFilter("nearest", "nearest")
+    src2 = love.audio.newSource("music/relaxedduck.it") 
+    love.audio.play(src2)
 end
 
 function Game:CheckExits()
