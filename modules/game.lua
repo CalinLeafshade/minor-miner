@@ -64,6 +64,7 @@ function Game:ChangeRoom(roomName, edge, enMult, exMult)
     self.Player.OnGround = false
     self.Player.Ground = nil
     Room.Current:Enter()
+    self.NewRoom = true
 end
 
 function Game:Init()
@@ -105,15 +106,20 @@ function Game:CheckExits()
 end
 
 function Game:Update(dt, focus)
-
+    if self.NewRoom then
+        self.NewRoom = false
+        dt = 0
+    end
     if focus and not self.Paused then
+        self.CWorld:update(dt)
         self.Player:Update(dt)
         self:CheckExits()
         self.Water:Update(dt)
         Room.Current:Update(dt)
         if not self.Viewport.Locked then
-            self.Viewport.x = clamp(self.Player.Position.x - 160,0,Room.Current:Width() - 320)
-            self.Viewport.y = clamp(self.Player.Position.y - 100,0,Room.Current:Height() - 200)
+            local x, y = self.Player.Collider:center()
+            self.Viewport.x = clamp(x - 160,0,Room.Current:Width() - 320)
+            self.Viewport.y = clamp(y - 100,0,Room.Current:Height() - 200)
         end
         log("viewport", "viewport: ", self.Viewport.x, self.Viewport.y)
     end

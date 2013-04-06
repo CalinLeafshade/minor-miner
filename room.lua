@@ -85,6 +85,7 @@ function Room:DrawBackground()
 end
 
 function Room:Init()
+
     local f = love.filesystem.exists("gfx/backgrounds/" .. self.Name .. "-Final.png") and "gfx/backgrounds/" .. self.Name .. "-Final.png" or "gfx/backgrounds/" .. self.Name .. ".png"
     self.Background = love.graphics.newImage(f)
     if love.filesystem.exists("gfx/backgrounds/" .. self.Name .. "-Layer1.png") then
@@ -109,6 +110,8 @@ end
 
 function Room:Clean()
     self.Background = nil
+    self.Layers = nil
+    self.Overlay = nil
     Game.CWorld:remove(unpack(self.Shapes))
 end
 

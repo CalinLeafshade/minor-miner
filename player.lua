@@ -351,7 +351,7 @@ function Player:Draw()
         local alpha = self.Invulnerable and (math.sin(love.timer.getTime() * 60) + 1) / 2 * 255 or 255
         local tint = Room.Current.Tint or White
         love.graphics.setColor(tint[1],tint[2],tint[3], alpha)  
-        self.Animations[self.Animation]:Draw(self.Position:unpack())
+        self.Animations[self.Animation]:Draw(self.Collider:center())
     end
 end
 
