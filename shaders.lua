@@ -6,7 +6,7 @@ Shaders =
 		extern vec4 lightCol;
 		extern vec4 amb;
         vec4 effect(vec4 color, Image img, vec2 texture_coords, vec2 pixel_coords) {
-        	vec4 nrml = Texel(normal, texture_coords);
+        	vec3 nrml = Texel(normal, texture_coords).rgb;
             nrml = nrml * 2 - 1.0f;
             vec3 l = normalize(vec3(light.x - pixel_coords.x, light.y - pixel_coords.y, 50));
             vec4 id = Texel(img, texture_coords) * max(dot(nrml,l),0.0) * lightCol;
@@ -30,7 +30,7 @@ Shaders =
 		    vec4 color = amb;
 		    float att,spotEffect;
 		    
-		    vec4 nrml = Texel(normal, texture_coords);
+		    vec3 nrml = Texel(normal, texture_coords).rgb;
             nrml = nrml * 2 - 1.0f;
 		    /* a fragment shader can't write a verying variable, hence we need
 		    a new variable to store the normalized interpolated normal */

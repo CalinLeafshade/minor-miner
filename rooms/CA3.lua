@@ -14,21 +14,5 @@ CA3.Zone = "The Caverns"
 CA3:AddExit("right", "CA2")
 CA3:AddExit("bottom", "CA4")
 
-function CA3:Enter()
-	self.map = love.graphics.newImage("gfx/difftest.png")
-	self.NormalMap = love.graphics.newImage("gfx/nrmltest.png")
-end
-
-function CA3:PreBackgroundDraw()
-	local x,y = love.mouse.getPosition();
-	Shaders['normal']:send("light", {x / Scale, 200 - y / Scale})
-	Shaders['normal']:send("normal", self.NormalMap)
-	Shaders['normal']:send("amb", {0.1,0.1,0.1,1})
-	love.graphics.setPixelEffect(Shaders['normal'])
-	love.graphics.draw(self.map, 0,0)
-	love.graphics.setPixelEffect()
-end
-
-
 return CA3
 
