@@ -77,7 +77,7 @@ function Game:Init()
     self.Canvas = love.graphics.newCanvas(320,200)
     self.Canvas:setFilter("nearest", "nearest")
     src2 = love.audio.newSource("music/relaxedduck.it") 
-    love.audio.play(src2)
+    --love.audio.play(src2)
 end
 
 function Game:CheckExits()
@@ -117,6 +117,7 @@ function Game:Update(dt, focus)
         self.Player:Update(dt)
         self:CheckExits()
         self.Water:Update(dt)
+				Room.Current:BaseUpdate(dt)
         Room.Current:Update(dt)
         if not self.Viewport.Locked then
             local x, y = self.Player.Collider:center()

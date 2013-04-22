@@ -71,6 +71,17 @@ function Room:PostPlayerDraw()
 
 end
 
+function Room:BaseUpdate(dt)
+	if self.Lighting then
+		self.Timer = self.Timer or 0
+		self.Timer = self.Timer + dt
+		if self.Timer > 0.1 then
+			self.Timer = self.Timer - 0.1
+			self.LightAlpha = clamp(self.LightAlpha + math.random(20) - 10,self.LightMin, self.LightMax)
+		end
+	end
+end
+
 function Room:DrawBackground()
     if self.Layers then
         for i = 1, #self.Layers do
@@ -82,6 +93,12 @@ function Room:DrawBackground()
         end
     end
     love.graphics.draw(Room.Current.Background,0,0)
+		if self.Lighting then
+			love.graphics.setColor(255,255,255,self.LightAlpha)
+			love.graphics.draw(self.Lighting,0,0)
+			love.graphics.setColor(255,255,255)
+		end
+		
 end
 
 function Room:Init()
@@ -102,6 +119,13 @@ function Room:Init()
             layerNum = layerNum + 1
         end
     end
+		if love.filesystem.exists("gfx/backgrounds/" .. self.Name .. "-Lighting.png") then
+			self.Lighting = love.graphics.newImage("gfx/backgrounds/" .. self.Name .. "-Lighting.png")
+			self.LightMin = self.LightMin or 150
+			self.LightMax = self.LightMax or 200
+			self.LightAlpha = (self.LightMin + self.LightMax) / 2
+			
+		end
     if love.filesystem.exists("gfx/backgrounds/" .. self.Name .. "-Overlay.png") then
         self.Overlay = love.graphics.newImage("gfx/backgrounds/" .. self.Name .. "-Overlay.png")
     end

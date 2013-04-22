@@ -7,7 +7,7 @@ require('util')
 
 
 function love.load()
-    if arg[#arg] == "-debug" then require("mobdebug").start() end
+    --if arg[#arg] == "-debug" then require("mobdebug").start() end
     love.graphics.setDefaultImageFilter("nearest", "nearest")
     Scale = 4
     ModCon = require("ModCon")
@@ -16,7 +16,7 @@ end
 
 
 function love.quit()
-
+	
 end
 
 function love.keypressed(key)
