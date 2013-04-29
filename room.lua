@@ -93,7 +93,7 @@ function Room:DrawBackground()
         end
     end
     love.graphics.draw(Room.Current.Background,0,0)
-		if self.Lighting then
+		if self.Lighting then			
 			love.graphics.setColor(255,255,255,self.LightAlpha)
 			love.graphics.draw(self.Lighting,0,0)
 			love.graphics.setColor(255,255,255)
@@ -121,8 +121,8 @@ function Room:Init()
     end
 		if love.filesystem.exists("gfx/backgrounds/" .. self.Name .. "-Lighting.png") then
 			self.Lighting = love.graphics.newImage("gfx/backgrounds/" .. self.Name .. "-Lighting.png")
-			self.LightMin = self.LightMin or 150
-			self.LightMax = self.LightMax or 200
+			self.LightMin = self.LightMin or 200
+			self.LightMax = self.LightMax or 255
 			self.LightAlpha = (self.LightMin + self.LightMax) / 2
 			
 		end

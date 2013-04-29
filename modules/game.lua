@@ -20,7 +20,7 @@ end
 -- Continued description
 -- @param param  param description 
 function Game:ChangeRoom(roomName, edge, enMult, exMult)
-
+	
     enMult = enMult or 0
     exMult = exMult or 0
     if not Room.Rooms[roomName] then
@@ -34,7 +34,7 @@ function Game:ChangeRoom(roomName, edge, enMult, exMult)
     Room.Current = Room.Rooms[roomName]
     Room.Current:Init()
     
-    if last then
+    if last and Room.Current ~= last then
         local w = Room.Current:Width()
         local h = Room.Current:Height()
         
@@ -76,8 +76,6 @@ function Game:Init()
     self.Gravity = vector.new(0,1200)
     self.Canvas = love.graphics.newCanvas(320,200)
     self.Canvas:setFilter("nearest", "nearest")
-    src2 = love.audio.newSource("music/relaxedduck.it") 
-    --love.audio.play(src2)
 end
 
 function Game:CheckExits()
@@ -167,8 +165,11 @@ function Game:Draw(focus)
         end
         love.graphics.setCanvas()
         love.graphics.push()
-        love.graphics.scale(Scale, Scale) 
-        love.graphics.draw(self.Canvas,0,0)
+				love.graphics.translate(Config.xOffset or 0, Config.yOffset or 0)
+        love.graphics.scale(Config.Scale, Config.Scale) 
+        --love.graphics.draw(self.Canvas,Config.xOffset or 0, Config.yOffset or 0)
+				love.graphics.draw(self.Canvas,0,0)
+				
         love.graphics.pop() 
     end
 end
@@ -193,6 +194,9 @@ function Game:OnKeypress(keycode)
         self:Load(1)
     elseif keycode == "m" then
         ModCon:Focus(MapScreen)
+		elseif keycode == "escape" then
+				TitleScreenModule:ShowMenu("pause")
+        ModCon:Focus(TitleScreenModule)
     end
 end
 

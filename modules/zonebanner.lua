@@ -3,15 +3,18 @@ ZoneBanner = require('module'):new("zonebanner")
 ZoneBanner.Priority = -99999
 
 function ZoneBanner:Init()
-    self.Sizes = {12,16,32,128}
-    self.YOffset = {0,0,0,180}
-    self.Font = love.graphics.newFont("fonts/banner.ttf", self.Sizes[Scale])
-    self.Zone = ""
+    self.Sizes = {12,16,100,128,160}
+    self.YOffset = {0,0,150,180,220}
+    
+end
+
+function ZoneBanner:ConfigChanged()
+	self.Font = love.graphics.newFont("fonts/banner.ttf", self.Sizes[Config.Scale])
 end
 
 function ZoneBanner:Update(dt)
     if not Room.Current then return end
-    if Room.Current.Zone and Room.Current.Zone ~= self.Zone then -- new zone
+    if Room.Current.Zone and Room.Current.Zone ~= Game.State.LastZone then -- new zone
         if not Game.State.Visited then
             Game.State.Visited = {}
         end
@@ -20,7 +23,7 @@ function ZoneBanner:Update(dt)
         end
         Game.State.Visited[Room.Current.Zone] = true
         log(false, "New Zone")
-        self.Zone = Room.Current.Zone
+        Game.State.LastZone = Room.Current.Zone
         self.Running = true
         self.Co = coroutine.create(function()
             self.Alpha = 0
@@ -42,13 +45,13 @@ end
 
 
 function ZoneBanner:Draw()
-
+	local Scale = Config.Scale
     if self.Running then
         love.graphics.setColor(0,0,0,self.Alpha / 2)
         love.graphics.rectangle("fill", 0, 120 * Scale, smoothlerp(0,320 * Scale,self.Alpha / 255), 50 * Scale)
         love.graphics.setColor(255,255,255,self.Alpha)
         love.graphics.setFont(self.Font)
-        love.graphics.printf(self.Zone, 0, 140 * Scale - self.YOffset[Scale], 320 * Scale, "center")
+        love.graphics.printf(Game.State.LastZone, 0, 140 * Scale - self.YOffset[Scale], 320 * Scale, "center")
     end
 
 end

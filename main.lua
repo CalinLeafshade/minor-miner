@@ -3,16 +3,21 @@
 
 Input = require('input')
 require('util')
-
+Config = require('config')
 
 
 function love.load()
-    --if arg[#arg] == "-debug" then require("mobdebug").start() end
+		
+    if arg[#arg] == "-debug" then require("mobdebug").start() end
     love.graphics.setDefaultImageFilter("nearest", "nearest")
-    Scale = 4
+    love.mouse.setVisible(false)
     ModCon = require("ModCon")
-    ModCon:Init()
+		ModCon:LoadModules()
+		Config:Init()
+		Config:InitGfx()
+		ModCon:Init()
 end
+
 
 
 function love.quit()

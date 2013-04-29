@@ -15,6 +15,11 @@ function Module:new(name)
     return o
 end
 
+-- Called when config is changed
+function Module:ConfigChanged()
+	
+end
+
 --- Hides the module
 function Module:Hide()
     self.Visible = false
