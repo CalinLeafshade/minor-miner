@@ -14,6 +14,7 @@ CA2:AddExit("left", "CA3")
 --funcs
 
 function CA2:Enter()
+	self.LightAlpha = self.LightAlpha or 50
 	self.NormalMap = love.graphics.newImage("gfx/backgrounds/CA2-Normal.png")
 	if not self.Lighting then
 		self.Lighting = love.graphics.newImage("gfx/backgrounds/CA2-Lighting.png")
@@ -22,7 +23,7 @@ end
 
 function CA2:Update(dt)
 	self.Timer = self.Timer or 0
-	self.LightAlpha = self.LightAlpha or 200
+	
 	self.Timer = self.Timer + dt
 	if self.Timer > 0.1 then
 		self.Timer = self.Timer - 0.1

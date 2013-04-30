@@ -76,8 +76,6 @@ function Game:Init()
     self.Gravity = vector.new(0,1200)
     self.Canvas = love.graphics.newCanvas(320,200)
     self.Canvas:setFilter("nearest", "nearest")
-    src2 = love.audio.newSource("music/relaxedduck.it") 
-    love.audio.play(src2)
 end
 
 function Game:CheckExits()
@@ -120,11 +118,17 @@ function Game:Update(dt, focus)
         Room.Current:Update(dt)
         if not self.Viewport.Locked then
             local x, y = self.Player.Collider:center()
-            self.Viewport.x = clamp(x - 160,0,Room.Current:Width() - 320)
-            self.Viewport.y = clamp(y - 100,0,Room.Current:Height() - 200)
+            self.Viewport.x = x - 160
+            self.Viewport.y = y - 100
         end
+        self:ClampViewport()
         log("viewport", "viewport: ", self.Viewport.x, self.Viewport.y)
     end
+end
+
+function Game:ClampViewport()
+    self.Viewport.x = clamp(self.Viewport.x,0,Room.Current:Width() - 320)
+    self.Viewport.y = clamp(self.Viewport.y,0,Room.Current:Height() - 200)
 end
 
 function Game:LockViewport(x,y)

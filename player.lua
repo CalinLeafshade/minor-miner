@@ -313,7 +313,7 @@ function Player:Update(dt)
         local doMove = false
         
         for i=1,5 do
-            if not (self.Ground:contains(x,y + ychange) or self.Ground:contains(x - 5,y + ychange) or self.Ground:contains(x + 5,y + ychange)) then
+            if not (self.Ground:contains(x,y + ychange) or self.Ground:contains(x - 4,y + ychange) or self.Ground:contains(x + 4,y + ychange)) then
                 ychange = ychange + 1
             else
                 doMove = true

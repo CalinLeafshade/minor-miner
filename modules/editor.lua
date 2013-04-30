@@ -7,6 +7,8 @@ function Editor:Init()
     self.Mode = "select"
     self.DrawMode = "path"
     self.Verts = {}
+    self.PlatformTypes = {"allblock", "instakill", "downonly", "save", "breakable", "trigger", "water"}
+    self.CurrentType = 1
     self.Colors = {}
     self.Colors["allblock"] = {128,128,0}
     self.Colors["instakill"] = {255,0,0}
@@ -21,7 +23,7 @@ end
 function Editor:Draw(focus)
     
     if focus then
-            
+        --love.graphics.setLineWidth(Scale)
         --Draw platforms
         for i,v in ipairs(Room.Current.Platforms) do
             local c = self.Selected == v and self.Colors["selected"] or self.Colors[v.Mode]
@@ -34,34 +36,38 @@ function Editor:Draw(focus)
         
         if self.DrawMode == "box" then -- build verts for drawing
             if self.TopLeft then
-                local mx, my = toRoom(love.mouse.getPosition(), true)
+                local mx,my = love.mouse.getPosition()
+                local mx, my = toRoom(mx,my, true)
                 local v = {self.TopLeft[1], self.TopLeft[2], self.TopLeft[1], my, mx, my, mx, self.TopLeft[2]}
                 self.Verts = v
             end
         end
         
-        if #self.Verts > 3 then
+        if #self.Verts > 0 then
             love.graphics.setColor(128,128,128)
             local v = deepcopy(self.Verts)
             for i = 1, #v do
                 local x,y = toScreen(v[i],v[i])
                 v[i] = i % 2 == 1 and x or y
             end
-            love.graphics.polygon("line", unpack(v))
-        elseif #self.Verts > 1 then
-            love.graphics.setColor(128,128,128)
-            love.graphics.point(v[1],v[2])
+
+            if #v == 2 then 
+                love.graphics.point(unpack(v)) 
+            elseif #v == 4 then 
+                love.graphics.line(unpack(v)) 
+            else
+                love.graphics.polygon("line", unpack(v))
+            end
+
         end
         
     end
 end
 
 function Editor:Update(focus)
-    self.Status = "No Selection"
-    if self.Selected then
-            self.Status = "Selected collider:[" .. self.Selected.Mode
-    end
-    
+    log("EditorType", "Current type: " .. self.PlatformTypes[self.CurrentType])
+    log("EditorDrawMode", "Current drawmode: " .. self.DrawMode)
+    log("EditorMode", "Current mode: " .. self.Mode)
 end
 
 function Editor:Unlock()  
@@ -82,35 +88,55 @@ function Editor:LockX()
     ags.Mouse.SetBounds(self.Verts[#self.Verts - 1],0,self.Verts[#self.Verts - 1], 200)
 end
 
+function Editor:NextPlatformType()
+    self.CurrentType = self.CurrentType + 1
+    if self.CurrentType > #self.PlatformTypes then
+        self.CurrentType = 1
+    end
+end
+
+function Editor:PrevPlatformType()
+    self.CurrentType = self.CurrentType - 1
+    if self.CurrentType < 1 then
+        self.CurrentType = #self.PlatformTypes
+    end
+end
+
 function Editor:OnKeypress(key)
     if key == "tab" then
         ModCon:Defocus()
-    --elseif key == ags.eKeyReturn then
---    if self.Mode == "new" then self:Finalise() end
---  elseif key == ags.eKeyX then
---    self:LockX()
---  elseif key == ags.eKeyY then
---    self:LockY()
---  elseif key == ags.eKeyN then
---      self:NewCollider()
---  elseif key == ags.eKeyDelete then
---      self:DeleteCollider()
---  elseif key == ags.eKeyLeftArrow then
---      ags.SetViewport(ags.GetViewportX() - 5, ags.GetViewportY())
---  elseif key == ags.eKeyRightArrow then
---      ags.SetViewport(ags.GetViewportX() + 5, ags.GetViewportY())
---  elseif key == ags.eKeyUpArrow then
---      ags.SetViewport(ags.GetViewportX(), ags.GetViewportY() - 5)
---  elseif key == ags.eKeyDownArrow then
---      ags.SetViewport(ags.GetViewportX(), ags.GetViewportY() + 5)
---  elseif key == ags.eKeyU then
---      ags.ReleaseViewport()
+    elseif key == "return" then
+        if self.Mode == "new" then self:Finalise() end
+    elseif key == "[" then
+        self:PrevPlatformType()
+    elseif key == "]" then
+        self:NextPlatformType()
+    elseif key == "m" then
+        self.DrawMode = self.DrawMode == "path" and "box" or "path"
+    elseif key == "x" then
+        --self:LockX()
+    elseif key == "y" then
+        --self:LockY()
+    elseif key == "n" then
+        self:NewCollider()
+    elseif key == "delete" then
+        self:DeleteCollider()
+    elseif key == "left" then
+        Game:LockViewport(Game.Viewport.x - 5, Game.Viewport.y)
+    elseif key == "right" then
+        Game:LockViewport(Game.Viewport.x + 5, Game.Viewport.y)
+    elseif key == "up" then
+        Game:LockViewport(Game.Viewport.x, Game.Viewport.y - 5)
+    elseif key == "down" then
+        Game:LockViewport(Game.Viewport.x, Game.Viewport.y + 5)
+    elseif key == "u" then
+        Game:UnlockViewport()
     end
-    
+    Game:ClampViewport()
 end
 
 function Editor:SelectAt(mx,my)
-    local shapes = CWorld:shapesAt(toRoom(mx,my))
+    local shapes = Game.CWorld:shapesAt(toRoom(mx,my))
     if #shapes > 0 then 
         local o = shapes[1].Object
         self.Selected = o
@@ -127,13 +153,13 @@ end
 
 function Editor:OnClick(button,mx,my)
     if self.Mode == "select" then
-        if button == 1 then
+        if button == "l" then
             self:SelectAt(mx,my)
         elseif button == 2 then
             self.Selected = nil
         end    
     elseif self.Mode == "new" then
-        if button == 1 then
+        if button == "l" then
             if self.DrawMode == "path" then     
                 self:AddVert(toRoom(mx,my))
             elseif self.DrawMode == "box" then
@@ -144,7 +170,7 @@ function Editor:OnClick(button,mx,my)
                     self.TopLeft = {toRoom(mx,my)}
                 end         
             end
-        elseif button == 2 then
+        elseif button == "r" then
             self:Undo()
         end
     end
@@ -152,30 +178,32 @@ function Editor:OnClick(button,mx,my)
 end
 
 function Editor:GotFocus()
-    log(false,"got focus")
+    self.Mode = "select"
+    self.Verts = {}
 end
 
 function Editor:LostFocus()
     self.Mode = "select"
     self.Verts = {}
-    --self:Unlock()
+    Game:UnlockViewport()
 end
 
 function Editor:Finalise()
     if self.DrawMode == "path" then
         if #self.Verts < 6 then
-            ags.Display("You need at least 3 non-colinear vertices")
+            log("You need at least 3 non-colinear vertices")
         else
-            CurrentRoom().Platforms[#CurrentRoom().Platforms + 1] = Platform:new(self.List.Items[self.List.SelectedIndex], unpack(self.Verts))          
+            Room.Current.Platforms[#Room.Current.Platforms + 1] = Platform:new(self.PlatformTypes[self.CurrentType], unpack(self.Verts))          
         end
     elseif self.DrawMode == "box" then
         if not self.BottomRight or not self.TopLeft then
-            ags.Display("Nope please")
+            log("Nope please")
+        else
+            local v = {self.TopLeft[1], self.TopLeft[2], self.TopLeft[1], self.BottomRight[2], self.BottomRight[1], self.BottomRight[2], self.BottomRight[1], self.TopLeft[2]}
+            Room.Current.Platforms[#Room.Current.Platforms + 1] = Platform:new(self.PlatformTypes[self.CurrentType], unpack(v))           
+            self.TopLeft = nil
+            self.TopRight = nil
         end
-        local v = {self.TopLeft[1], self.TopLeft[2], self.TopLeft[1], self.BottomRight[2], self.BottomRight[1], self.BottomRight[2], self.BottomRight[1], self.TopLeft[2]}
-        CurrentRoom().Platforms[#CurrentRoom().Platforms + 1] = Platform:new(self.List.Items[self.List.SelectedIndex], unpack(v))           
-        self.TopLeft = nil
-        self.TopRight = nil
     end
     self.Verts = {}
     self:Unlock()
@@ -189,10 +217,10 @@ end
 
 function Editor:DeleteCollider()
     if self.Selected then
-        local p = CurrentRoom().Platforms
+        local p = Room.Current.Platforms
         for i,v in ipairs(p) do
             if v == self.Selected then
-                CWorld:remove(p.Collider)
+                Game.CWorld:remove(p.Collider)
                 table.remove(p,i)
             end
         end
