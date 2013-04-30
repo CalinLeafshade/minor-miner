@@ -178,24 +178,14 @@ function Editor:OnClick(button,mx,my)
 end
 
 function Editor:GotFocus()
-<<<<<<< HEAD
     self.Mode = "select"
     self.Verts = {}
-=======
-    log(false,"got focus")
-		love.mouse.setVisible(true)
->>>>>>> df6d988e98eb5b55c12c2b1a1e03d4985e1db29b
 end
 
 function Editor:LostFocus()
     self.Mode = "select"
     self.Verts = {}
-<<<<<<< HEAD
     Game:UnlockViewport()
-=======
-		love.mouse.setVisible(false)
-    --self:Unlock()
->>>>>>> df6d988e98eb5b55c12c2b1a1e03d4985e1db29b
 end
 
 function Editor:Finalise()
