@@ -28,7 +28,7 @@ function Editor:Draw(focus)
         for i,v in ipairs(Room.Current.Platforms) do
             local c = self.Selected == v and self.Colors["selected"] or self.Colors[v.Mode]
             love.graphics.setColor(unpack(c))
-            v:Draw(Scale)
+            v:Draw(Config.Scale)
             local x,y = toScreen(v.Collider:center())
             love.graphics.setColor(255,255,255)
             love.graphics.print(tostring(i), x,y)
@@ -178,14 +178,24 @@ function Editor:OnClick(button,mx,my)
 end
 
 function Editor:GotFocus()
+<<<<<<< HEAD
     self.Mode = "select"
     self.Verts = {}
+=======
+    log(false,"got focus")
+		love.mouse.setVisible(true)
+>>>>>>> df6d988e98eb5b55c12c2b1a1e03d4985e1db29b
 end
 
 function Editor:LostFocus()
     self.Mode = "select"
     self.Verts = {}
+<<<<<<< HEAD
     Game:UnlockViewport()
+=======
+		love.mouse.setVisible(false)
+    --self:Unlock()
+>>>>>>> df6d988e98eb5b55c12c2b1a1e03d4985e1db29b
 end
 
 function Editor:Finalise()

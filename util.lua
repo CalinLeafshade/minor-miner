@@ -4,6 +4,18 @@ math.random(); math.random(); math.random()
 
 White = {255,255,255}
 
+function loop(val, min, max)
+	if val > max then return min end
+	if val < min then return max end
+	return val
+	
+end
+
+--- Joins two tables
+function table.join(first_table, second_table)
+	for k,v in pairs(second_table) do first_table[k] = v end
+end
+
 --- Round a value
 -- @param  num Value to round
 -- @param  idp Number of decimal place (default 0)
@@ -121,6 +133,14 @@ function UUID()
     return table.concat(uuid)
 end 
 
+function try(f, catch_f)
+	local status, exception = pcall(f)
+	if not status then
+		catch_f(exception)
+	end
+end
+
+
 --- Converts screen coordinates to room coordinates
 -- @param  x        X coord
 -- @param  y        Y coord
@@ -129,7 +149,7 @@ end
 -- @return          The translated [and scaled] Y coord
 function toRoom(x,y,useScale)
     useScale = useScale or true
-    local scale = useScale and Scale or 1
+    local scale = useScale and Config.Scale or 1
     return (x / scale) + Game.Viewport.x, (y / scale) + Game.Viewport.y
 end
 
@@ -139,5 +159,5 @@ end
 -- @return   Scaled and translated X
 -- @return   Scaled and translated Y
 function toScreen(x,y)
-    return (x - Game.Viewport.x) * Scale, (y - Game.Viewport.y) * Scale
+    return (x - Game.Viewport.x) * Config.Scale, (y - Game.Viewport.y) * Config.Scale
 end

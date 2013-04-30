@@ -1,5 +1,8 @@
 --conf.lua
+
+
 function love.conf(t)
+		
     t.title = "Minor Miner"        -- The title of the window the game is in (string)
     t.author = "Sanctuary Interactive"        -- The author of the game (string)
     t.url = "http://www.sanctuary-interactive.com"                 -- The website of the game (string)
@@ -7,11 +10,11 @@ function love.conf(t)
     t.version = "0.8.0"         -- The LÖVE version this game was made for (string)
     t.console = true           -- Attach a console (boolean, Windows only)
     t.release = false           -- Enable release mode (boolean)
-    t.screen.width = 1280        -- The window width (number)
-    t.screen.height = 800       -- The window height (number)
+    t.screen.width = 320        -- The window width (number)
+    t.screen.height = 200      -- The window height (number)
     t.screen.fullscreen = false -- Enable fullscreen (boolean)
-    t.screen.vsync = true      -- Enable vertical sync (boolean)
-    t.screen.fsaa = 4           -- The number of FSAA-buffers (number)
+    t.screen.vsync = false     -- Enable vertical sync (boolean)
+    t.screen.fsaa = 0           -- The number of FSAA-buffers (number)
     t.modules.joystick = true   -- Enable the joystick module (boolean)
     t.modules.audio = true      -- Enable the audio module (boolean)
     t.modules.keyboard = true   -- Enable the keyboard module (boolean)

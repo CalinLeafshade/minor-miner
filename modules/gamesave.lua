@@ -32,7 +32,7 @@ end
 function GameSaveModule:Draw(focus)
     if self.Alpha > 0 then
         love.graphics.setColor(255,255,255,self.Alpha)
-        love.graphics.printf("Game Saved",0,100 * Scale,320 * Scale,"center")
+        love.graphics.printf("Game Saved",0,100 * Config.Scale,320 * Config.Scale,"center")
     end
 end
 

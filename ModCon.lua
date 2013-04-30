@@ -3,7 +3,8 @@
 local ModCon = 
 {
     Modules = {},
-    ByName = {}
+    ByName = {},
+		PreInit = true
 }
 
 function ModCon:Add(mod)
@@ -35,16 +36,25 @@ function ModCon:LoadModules()
 end
 
 function ModCon:Init()
-    self:LoadModules()
+    
     for i,v in ipairs(self.Modules or {}) do
         v:Init()
     end
+		self.PreInit = false
+		self:ConfigChanged()
 end
 
 function ModCon:Update(dt)
     for i,v in ipairs(self.Modules or {}) do
         v:Update(dt, v == self.Active)
     end
+end
+
+function ModCon:ConfigChanged()
+	if self.PreInit then return end
+	for i,v in ipairs(self.Modules or {}) do
+		v:ConfigChanged()
+	end
 end
 
 function ModCon:LateUpdate()
@@ -60,9 +70,14 @@ function ModCon:LateDraw()
 end
 
 function ModCon:Draw()
+		
     for i,v in ipairs(self.Modules or {}) do
-        v:Draw(v == self.Active)
+			love.graphics.push()
+			love.graphics.translate(Config.xOffset or 0, Config.yOffset or 0)
+			v:Draw(v == self.Active)
+			love.graphics.pop()
     end
+		
 end
 
 function ModCon:OnKeypress(keycode)

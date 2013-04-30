@@ -66,9 +66,9 @@ function MapScreen:Draw(focus)
     if not focus then return end
 
     local lg = love.graphics
-
+		local Scale = Config.Scale
     lg.setColor(0,0,0,128)
-    lg.rectangle("fill",0,0,320 * Scale, 200 * Scale)
+    lg.rectangle("fill",0,0,lg.getWidth(), lg.getHeight())
 
     lg.push()
     lg.translate(160 * Scale + (-self.X  * self.Scale - self.Width * self.Scale / 2), 100 * Scale) -- centre map
