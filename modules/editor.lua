@@ -1,5 +1,7 @@
 --EditorModule
 
+Enemy = require('enemy')
+
 Editor = require('module'):new("editor")
 Editor.Priority = -500
 function Editor:Init()
@@ -33,6 +35,22 @@ function Editor:Draw(focus)
             love.graphics.setColor(255,255,255)
             love.graphics.print(tostring(i), x,y)
         end
+		
+		--draw enemy colliders
+		for i,p in ipairs(Room.Current.Enemies or {}) do
+			love.graphics.setColor(255,0,0)
+			local scale = Config.Scale
+			local v = {p.Collider._polygon:unpack()}
+			for i = 1, #v do
+				if i % 2 == 1 then
+					v[i] = v[i] - Game.Viewport.x
+				else
+					v[i] = v[i] - Game.Viewport.y
+				end
+				v[i] = v[i] * scale + 2
+			end
+			love.graphics.polygon("line", unpack(v))
+		end
         
         if self.DrawMode == "box" then -- build verts for drawing
             if self.TopLeft then
@@ -155,8 +173,9 @@ function Editor:OnClick(button,mx,my)
     if self.Mode == "select" then
         if button == "l" then
             self:SelectAt(mx,my)
-        elseif button == 2 then
+        elseif button == "r" then
             self.Selected = nil
+			Enemy.Spawn("mushroom", mx / Config.Scale ,my / Config.Scale)
         end    
     elseif self.Mode == "new" then
         if button == "l" then
@@ -180,12 +199,14 @@ end
 function Editor:GotFocus()
     self.Mode = "select"
     self.Verts = {}
+	love.mouse.setVisible(true)
 end
 
 function Editor:LostFocus()
     self.Mode = "select"
     self.Verts = {}
     Game:UnlockViewport()
+	love.mouse.setVisible(false)
 end
 
 function Editor:Finalise()

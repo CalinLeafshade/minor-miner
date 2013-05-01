@@ -4,6 +4,7 @@ Room = require("room")
 Platform = require("platform")
 Game = require("module"):new("game")
 vector = require("vector")
+Enemy = require('enemy')
 require('gamestate')
 local HC = require("hardoncollider")
 
@@ -76,6 +77,7 @@ function Game:Init()
     self.Gravity = vector.new(0,1200)
     self.Canvas = love.graphics.newCanvas(320,200)
     self.Canvas:setFilter("nearest", "nearest")
+	Enemy:GetTypes()
 end
 
 function Game:CheckExits()
@@ -105,17 +107,24 @@ function Game:CheckExits()
   
 end
 
+function Game:UpdateEnemies(dt)
+	for i,v in ipairs(Room.Current.Enemies or {}) do
+		v:Update(dt)
+	end
+end
+
 function Game:Update(dt, focus)
     if self.NewRoom then
         self.NewRoom = false
         dt = 0
     end
     if focus and not self.Paused then
-        self.CWorld:update(dt)
+        --self.CWorld:update(dt)
         self.Player:Update(dt)
         self:CheckExits()
         self.Water:Update(dt)
-				Room.Current:BaseUpdate(dt)
+		self:UpdateEnemies(dt)
+		Room.Current:BaseUpdate(dt)
         Room.Current:Update(dt)
         if not self.Viewport.Locked then
             local x, y = self.Player.Collider:center()
@@ -146,6 +155,12 @@ function Game:NewGame(slot)
     self.State = GameState:new(slot)
 end
 
+function Game:DrawEnemies()
+	for i,v in ipairs(Room.Current.Enemies or {}) do
+		v:Draw()
+	end
+end
+
 function Game:Draw(focus)
     if self.Visible then        
         love.graphics.setCanvas(self.Canvas)
@@ -161,6 +176,7 @@ function Game:Draw(focus)
             Room.Current:DrawBackground()
             Room.Current:PrePlayerDraw()
             self.Player:Draw()
+			self:DrawEnemies()
             Room.Current:PostPlayerDraw()
         end
         

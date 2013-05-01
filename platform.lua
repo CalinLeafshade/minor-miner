@@ -50,7 +50,7 @@ function Platform:Draw(scale)
         else
             v[i] = v[i] - Game.Viewport.y
         end
-        v[i] = v[i] * Scale + 2
+        v[i] = v[i] * scale + 2
     end
     love.graphics.polygon("line", unpack(v))
 end

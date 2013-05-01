@@ -92,8 +92,6 @@ function Player:CollideWithPlatform(object, dx, dy)
     self.CollVec.x = dx
     self.CollVec.y = dy
     self.CollVec:normalize()
-    log("grad", "dy/dx: " .. dy/dx .. " dy: " .. dy .. " dx: " .. dx)
-    log("vec", "vec: " .. tostring(self.CollVec))
     local resolve = false;
     if object.Mode ~= trigger then
 

@@ -71,6 +71,8 @@ function Room:PostPlayerDraw()
 
 end
 
+
+
 function Room:BaseUpdate(dt)
 	if self.Lighting then
 		self.Timer = self.Timer or 0
