@@ -120,6 +120,10 @@ function Editor:PrevPlatformType()
     end
 end
 
+function Editor:InitGUI()
+	self.pInspector = require('guis.pinspector')
+end
+
 function Editor:OnKeypress(key)
     if key == "tab" then
         ModCon:Defocus()

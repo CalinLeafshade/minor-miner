@@ -20,6 +20,14 @@ function Module:ConfigChanged()
 	
 end
 
+function Module:InitGUI()
+	
+end
+
+function Module:OnMouseRelease(x,y,mb)
+
+end
+
 --- Hides the module
 function Module:Hide()
     self.Visible = false

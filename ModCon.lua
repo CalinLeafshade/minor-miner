@@ -40,8 +40,15 @@ function ModCon:Init()
     for i,v in ipairs(self.Modules or {}) do
         v:Init()
     end
+		self:InitGUI()
 		self.PreInit = false
 		self:ConfigChanged()
+end
+
+function ModCon:InitGUI()
+		for i,v in ipairs(self.Modules or {}) do
+        v:InitGUI()
+    end
 end
 
 function ModCon:Update(dt)
@@ -78,6 +85,12 @@ function ModCon:Draw()
 			love.graphics.pop()
     end
 		
+end
+
+function ModCon:OnMouseRelease(x,y,mb)
+	for i,v in ipairs(self.Modules or {}) do
+		v:OnMouseRelease(x,y,mb)
+	end
 end
 
 function ModCon:OnKeypress(keycode)

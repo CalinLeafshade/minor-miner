@@ -4,6 +4,7 @@
 Input = require('input')
 require('util')
 Config = require('config')
+GuiManager = require('guimanager')
 
 
 function love.load()
@@ -28,11 +29,21 @@ function love.keypressed(key)
     if key == "q" then
         love.event.push('quit')
     end
-    ModCon:OnKeypress(key)
+		if not GuiManager:OnKeypress(key) then
+			ModCon:OnKeypress(key)
+		end
 end
 
 function love.mousepressed(x,y,button)
-    ModCon:OnClick(x,y,button)
+		if not GuiManager:OnClick(x,y,button) then -- gui caught it
+			ModCon:OnClick(x,y,button)
+		end
+end
+
+function love.mousereleased(x,y,button)
+	if not GuiManager:OnMouseRelease(x,y,button) then -- gui caught it
+    ModCon:OnMouseRelease(x,y,button)
+	end
 end
 
 function love.keyreleased(key)
@@ -41,6 +52,7 @@ end
 
 function love.update(dt)
     Input:Update()
+		GuiManager:Update(dt)
     ModCon:Update(dt)
     log("fps", "FPS: " .. love.timer.getFPS())
 end
@@ -48,4 +60,5 @@ end
 function love.draw()
     ModCon:Draw()
     ModCon:LateDraw()
+		GuiManager:Draw()
 end

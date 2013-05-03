@@ -6,6 +6,7 @@ Game = require("module"):new("game")
 vector = require("vector")
 Enemy = require('enemy')
 require('gamestate')
+
 local HC = require("hardoncollider")
 
 function on_collide()
@@ -66,6 +67,10 @@ function Game:ChangeRoom(roomName, edge, enMult, exMult)
     self.Player.Ground = nil
     Room.Current:Enter()
     self.NewRoom = true
+end
+
+function Game:InitGUI()
+	--self.testgui = require('guis.testgui')
 end
 
 function Game:Init()
