@@ -43,6 +43,29 @@ function Room:SavePlatforms()
     log(false, "Room saved")
 end
 
+function Room:Save()
+	-- build table
+	local data = {}
+	data.platforms = {}
+	
+	for _,v in ipairs(self.Platforms) do
+		data.platforms[#data.platforms + 1] = {mode = v.Mode, verts = {v.Collider._polygon:unpack()}}
+	end
+	
+	data.enemies = {}
+	
+	data = DataDumper(data)
+	
+	local filename = love.filesystem.getWorkingDirectory() .. "/rooms/" .. self.Name .. "def.lua"
+	local f,err = io.open(filename,"w")
+	f:write("-- Generated At " .. os.date("%I:%M:%S") .. "\n")
+	f:write(data)
+	f:close()
+	log("Room saved!")
+	return true
+	
+end
+
 function Room:FirstEnter()
 
 end
@@ -131,7 +154,27 @@ function Room:Init()
     if love.filesystem.exists("gfx/backgrounds/" .. self.Name .. "-Overlay.png") then
         self.Overlay = love.graphics.newImage("gfx/backgrounds/" .. self.Name .. "-Overlay.png")
     end
-    self:InitialisePlatforms()
+	if love.filesystem.exists("rooms/" .. self.Name .. "def.lua") then
+		local data = love.filesystem.load("rooms/" .. self.Name .. "def.lua")()
+		self:InitPlatforms(data)
+	else
+		self:InitialisePlatforms()
+	end
+end
+
+function Room:InitPlatforms(data)
+	local p = data.platforms
+	self.Platforms = {}
+    self.Shapes = {}
+	for i,v in ipairs(p) do
+		self:AddPlatform(Platform:new(v.mode, unpack(v.verts)))
+	end
+end
+
+function Room:AddPlatform(p)
+	local i = #self.Platforms + 1
+	self.Platforms[i] = p
+	self.Shapes[i] = p.Collider
 end
 
 function Room:Clean()

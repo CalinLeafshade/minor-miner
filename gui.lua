@@ -6,17 +6,18 @@ gui =
     y = 0,
     width = 100,
     height = 100,
-    bgColor = {100,100,100},
-		fgColor = {255,255,255},
-    borderColor = {200,200,200},
+    bgColor = Color.DarkGrey,
+	fgColor = Color.White,
+    borderColor = Color.LightGrey,
     titleBarHeight = 20,
+	font = love.graphics.newFont(12)
 }
 
 function gui:new(o)
     o = o or {}
     setmetatable(o, self)
     self.__index = self
-    o.visible = true
+    o.visible = o.visible == null and true or false
     o.controls = {}
     manager:add(o)
     return o
@@ -109,13 +110,13 @@ function gui:draw()
         lg.draw(self.background, self.x,self.y)
         lg.setScissor()
     else
-        lg.setColor(self.bgColor[1],self.bgColor[2],self.bgColor[3])
+        lg.setColor(self.bgColor:unpack())
         lg.rectangle("fill", self.x,self.y,self.width,self.height)
-        lg.setColor(self.borderColor[1],self.borderColor[2],self.borderColor[3])
+        lg.setColor(self.borderColor:unpack())
         lg.rectangle("line", self.x,self.y,self.width,self.height)
         lg.rectangle("fill", self.x,self.y,self.width,self.titleBarHeight)
 				if self.text then
-					lg.setColor(self.fgColor[1],self.fgColor[2],self.fgColor[3])
+					lg.setColor(self.fgColor:unpack())
 					lg.print(self.text, self.x + 4, self.y + 2)
 				end
     end
@@ -132,10 +133,10 @@ gui.control =
     y = 0,
     width = 30,
     height = 10,
-    bgColor = {128,128,128,255},
-    fgColor = {255,255,255,255},
-    hlColor = {200,255,255,255},
-    font = love.graphics.newFont(14),
+    bgColor = Color.DarkGrey,
+    fgColor = Color.White,
+    hlColor = Color.Blue,
+    font = love.graphics.newFont(10),
     text = ""
 }
 
@@ -223,23 +224,25 @@ end
 function gui.button:draw(x,y)
     x,y = self.x + x, self.y + y
     local lg = love.graphics
-    lg.setColor(self.bgColor[1],self.bgColor[2],self.bgColor[3],self.bgColor[4])
+    lg.setColor(self.bgColor:unpack())
     lg.rectangle("fill",x,y,self.width, self.height)
-    local low = {75,75,75,255}
-    local high = {255,255,255,255}
+    local low = {self.bgColor.r * 0.5, self.bgColor.g  * 0.5, self.bgColor.b * 0.5,255}
+	local high = 
+	{
+		clamp(self.bgColor.r * 1.5,0,255), 
+		clamp(self.bgColor.g * 1.5,0,255), 
+		clamp(self.bgColor.b * 1.5,0,255),
+		255
+	}
     
-    if self.isPressed then
-        lg.setColor(unpack(low))
-    else
-        lg.setColor(unpack(high))
+    if self.isPressed or self.toggled then
+		low,high = high,low
     end
+    lg.setColor(unpack(high))
     lg.line(x,y + self.height,x, y, x + self.width, y)
-    if self.isPressed then
-        lg.setColor(unpack(high))
-    else
-        lg.setColor(unpack(low))
-    end
+    lg.setColor(unpack(low))
     lg.line(x,y + self.height,x + self.width, y + self.height, x + self.width, y)
+	lg.setColor(self.fgColor:unpack())
     lg.setFont(self.font)
     local yt = y + self.height / 2 - self.font:getHeight() / 2
     lg.printf(self.text, x, yt, self.width, "center")
@@ -253,14 +256,30 @@ function gui.label:new( o,parent )
     setmetatable(o, { __index = self })
     o:parentTo(parent)
     o.alignment = o.alignment or "left"
+	o.clip = o.clip or false
     return o
 end
 
 function gui.label:draw(x,y)
     x,y = self.x + x, self.y + y
-    love.graphics.setScissor(x,y,self.width,self.height)
-    love.graphics.printf(self.text, x, y, self.width, self.alignment)
-    love.graphics.setScissor()
+	love.graphics.setColor(self.fgColor:unpack())
+    if self.clip then 
+		love.graphics.setScissor(x,y,self.width,self.height)
+		love.graphics.printf(self.text, x, y, self.width + 1, self.alignment)
+		love.graphics.setScissor()
+	else
+		local lines = self.text:split("\n")
+		local w = 0
+		for _,v in ipairs(lines) do
+			local lw = self.font:getWidth(v)
+			w = w > lw and w or lw
+		end
+		self.width = w
+		local _, linecount = string.gsub(self.text, "\n", "")
+		linecount = linecount + 1
+		self.height = self.font:getHeight() * linecount
+		love.graphics.printf(self.text, x, y, self.width + 1, self.alignment)
+	end
 end
 
 -- gui textbox
@@ -288,17 +307,31 @@ end
 
 function gui.textbox:draw(x,y)
     x,y = x + self.x, y + self.y
+	local w,h = self.width, self.height
+	
     local lg = love.graphics
-    lg.setColor(unpack(self.bgColor))
-    lg.rectangle("fill", x, y, self.width, self.height)
+	
+	if self.label then
+		lg.setColor(self.fgColor:unpack())
+		lg.setFont(self.font)
+		lg.print(self.label,x,y + 3)
+		local ext = self.font:getWidth(self.label) + 5
+		x = x + ext
+		w = w - ext
+	end
+	
+	
+	
+    lg.setColor(self.bgColor:unpack())
+    lg.rectangle("fill", x, y, w,h)
     if self:isFocussed() then
-        lg.setColor(unpack(self.hlColor))
+        lg.setColor(self.hlColor:unpack())
     else
-        lg.setColor(unpack(self.fgColor))
+        lg.setColor(self.fgColor:unpack())
     end
-    lg.rectangle("line", x, y, self.width, self.height)
-    lg.setScissor(x,y,self.width, self.height)
-    lg.setColor(unpack(self.fgColor))
+    lg.rectangle("line", x, y, w,h)
+    lg.setScissor(x,y,w,h)
+    lg.setColor(self.fgColor:unpack())
     lg.print(self.text, x + 2, y + 2)
     if self:isFocussed() then
         self.caret = math.floor(love.timer.getTime() * 2) % 2 < 1
@@ -343,14 +376,15 @@ gui.layout.type = "layout"
 function gui.layout:new(o, parent)
 	o = o or {}
 	setmetatable(o, { __index = self })
-  o:parentTo(parent)
+    o:parentTo(parent)
 	o.direction = o.direction or "vertical"
 	o.drawX = o.x
 	o.drawY = o.y
-	o.margin = 5
-	o.spacing = 5
+	o.margin = o.margin or 5
+	o.spacing = o.spacing or 5
+	o.border = o.border == null and true or o.border
 	o.controls = {}
-  return o
+	return o
 end
 
 function gui.layout.__tostring()
@@ -378,14 +412,20 @@ function gui.layout:getControl(x,y)
 	end
 end
 
+function gui.layout:update(dt)
+	for i,v in ipairs(self.controls or {}) do
+		v:update(dt)
+	end
+end
+
 function gui.layout:draw(x,y)
 	if not self.visible then return end
 	self.drawX = x + self.x + self.margin
 	self.drawY = y + self.y + self.margin
 	if self.text and self.text ~= "" and self.direction == "vertical" then
-		love.graphics.setColor(self.fgColor[1],self.fgColor[2],self.fgColor[3])
-		love.graphics.print(self.Text, self.x + 3, self.y + 3)
-		self.drawY = self.drawY + 15
+		love.graphics.setColor(self.fgColor:unpack())
+		love.graphics.print(self.text, self.drawX, self.drawY)
+		self.drawY = self.drawY + self.font:getHeight() + self.spacing
 	end
 	self.positions = {}
 	self.maxHeight = 0
@@ -419,8 +459,62 @@ function gui.layout:draw(x,y)
 		self.width = self.drawX + self.margin - x - self.x
 		self.height = self.maxHeight + self.margin * 2
 	end
-	love.graphics.setColor(unpack(self.fgColor))
-	love.graphics.rectangle("line",self.x + x, self.y + y, self.width, self.height)
+	if self.border then
+		love.graphics.setColor(self.fgColor:unpack())
+		love.graphics.rectangle("line",self.x + x, self.y + y, self.width, self.height)
+	end
+end
+
+gui.hline = gui.control:new()
+gui.hline.type = "hline"
+
+function gui.hline:new(o, parent)
+	o = o or {}
+	o.x = o.x or 0
+	o.y = o.y or 0
+	o.height = 0
+	setmetatable(o, { __index = self })
+    o:parentTo(parent)
+
+	
+end
+
+function gui.hline:draw(x,y)
+	love.graphics.setColor(self.fgColor:unpack())
+	love.graphics.line(x,y,x + self.parent.width - 10, y)
+end
+
+gui.selector = {}
+
+function gui.selector:new(o,parent)
+	o.choices = o.choices or {}
+	local lo = gui.layout:new({direction = "horizontal"}, parent)
+	lo.label = gui.label:new({text = o.text, y = 2, x =0}, lo)
+	lo.left = gui.button:new({text = "<", x=0,y=0, width = 15, height = 15}, lo)
+	lo.choice = gui.label:new({alignment = "center", text = o.choices[1], clip = true,width = 65, x=0,y=2,height = 15}, lo)
+	lo.right = gui.button:new({text = ">", x=0,y=0, width = 15, height = 15}, lo)
+	lo.selectedIndex = 1
+	lo.left.onClick = function()
+		lo.selectedIndex = loop(lo.selectedIndex - 1,1,#lo.choices)
+		lo.choice.text = lo.choices[lo.selectedIndex]
+		if lo.onChange and type(lo.onChange == "function") then
+			lo.onChange(lo)
+		end
+	end
+	lo.right.onClick = function()
+		lo.selectedIndex = loop(lo.selectedIndex + 1,1,#lo.choices)
+		lo.choice.text = lo.choices[lo.selectedIndex]
+		if lo.onChange and type(lo.onChange == "function") then
+			lo.onChange(lo)
+		end
+	end
+	lo.update = function(dt)
+		gui.layout.update(self,dt)
+		lo.choice.text = lo.choices[lo.selectedIndex]
+	end
+	
+	lo.choices = o.choices
+	return lo
 end
 
 return gui

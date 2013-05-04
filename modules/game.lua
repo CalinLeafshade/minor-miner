@@ -119,6 +119,7 @@ function Game:UpdateEnemies(dt)
 end
 
 function Game:Update(dt, focus)
+	
     if self.NewRoom then
         self.NewRoom = false
         dt = 0

@@ -3,12 +3,13 @@
 
 Input = require('input')
 require('util')
+require('color')
 Config = require('config')
 GuiManager = require('guimanager')
 
 
 function love.load()
-		
+    
     if arg[#arg] == "-debug" then require("mobdebug").start() end
     love.graphics.setDefaultImageFilter("nearest", "nearest")
     love.mouse.setVisible(false)
@@ -17,18 +18,22 @@ function love.load()
 		Config:Init()
 		Config:InitGfx()
 		ModCon:Init()
+		
 end
 
 
 
 function love.quit()
-	
+
 end
 
 function love.keypressed(key)
     if key == "q" then
         love.event.push('quit')
     end
+	if key == "p" then
+		profiler.start()
+	end
 		if not GuiManager:OnKeypress(key) then
 			ModCon:OnKeypress(key)
 		end
@@ -52,7 +57,7 @@ end
 
 function love.update(dt)
     Input:Update()
-		GuiManager:Update(dt)
+	GuiManager:Update(dt)
     ModCon:Update(dt)
     log("fps", "FPS: " .. love.timer.getFPS())
 end
@@ -60,5 +65,5 @@ end
 function love.draw()
     ModCon:Draw()
     ModCon:LateDraw()
-		GuiManager:Draw()
+	GuiManager:Draw()
 end

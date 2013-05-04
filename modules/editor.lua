@@ -15,7 +15,7 @@ function Editor:Init()
     self.Colors["allblock"] = {128,128,0}
     self.Colors["instakill"] = {255,0,0}
     self.Colors["downonly"] = {128,0,128}
-    self.Colors["selected"] = {255,255,255}
+    self.Colors["selected"] = {255,255,255,150}
     self.Colors["save"] = {255,255,0}
     self.Colors["breakable"] = {255,0,255}
     self.Colors["trigger"] = {0,255,0}
@@ -28,9 +28,14 @@ function Editor:Draw(focus)
         --love.graphics.setLineWidth(Scale)
         --Draw platforms
         for i,v in ipairs(Room.Current.Platforms) do
-            local c = self.Selected == v and self.Colors["selected"] or self.Colors[v.Mode]
+            --local c = self.Selected == v and self.Colors["selected"] or self.Colors[v.Mode]
+			local c = self.Colors[v.Mode]
             love.graphics.setColor(unpack(c))
             v:Draw(Config.Scale)
+			if v == self.Selected then
+				love.graphics.setColor(unpack(self.Colors['selected']))
+				v:Draw(Config.Scale)
+			end
             local x,y = toScreen(v.Collider:center())
             love.graphics.setColor(255,255,255)
             love.graphics.print(tostring(i), x,y)
@@ -50,6 +55,10 @@ function Editor:Draw(focus)
 				v[i] = v[i] * scale + 2
 			end
 			love.graphics.polygon("line", unpack(v))
+			if self.Selected == p then
+				love.graphics.setColor(unpack(self.Colors['selected']))
+				love.graphics.polygon("line", unpack(v))
+			end
 		end
         
         if self.DrawMode == "box" then -- build verts for drawing
@@ -83,13 +92,45 @@ function Editor:Draw(focus)
 end
 
 function Editor:Update(focus)
-    log("EditorType", "Current type: " .. self.PlatformTypes[self.CurrentType])
-    log("EditorDrawMode", "Current drawmode: " .. self.DrawMode)
-    log("EditorMode", "Current mode: " .. self.Mode)
+	--pinspector.lblPlatformMode = gui.label:new({x=0,y=0,clip = false, text = "Current Mode:"}, pinspector.platformLayout)
+	--pinspector.lblPlatformDrawMode = gui.label:new({x=0,y=0,clip = false, text = "Current Draw Mode:"}, pinspector.platformLayout)
+	--pinspector.lblPlatformVerts = gui.label:new({x=0,y=0,clip = false, text = "Verts:"}, pinspector.platformLayout)
+	
+	if self.TopMode == "platform" then
+		self.gui.lblPlatformMode.text = "Mode: " .. self.Mode
+		self.gui.drawModeSelector.selectedIndex = self.DrawMode == "path" and 1 or 2
+		if self.Mode == "select" and self.Selected then
+			self.gui.typeSelector.selectedIndex = indexFromValue(self.PlatformTypes, self.Selected.Mode)
+		elseif self.Mode == "new" then
+			self.gui.typeSelector.selectedIndex = self.CurrentType
+		end		
+	end
+	
+	if self.dragging then
+		local mx,my = toRoom(love.mouse.getPosition())
+		self.Selected.Collider:move(mx - self.lastmx, my - self.lastmy)
+		self.lastmx, self.lastmy = mx,my
+	end
+	
+	if self.Selected and self.TopMode == "enemy" then
+		self.gui.enemySpawnLayout.visible = false
+		self.gui.enemySelectLayout.visible = true
+		self.gui.txtEnemyX.text,self.gui.txtEnemyY.text = self.Selected.Collider:center()
+	else
+		self.gui.enemySpawnLayout.visible = true
+		self.gui.enemySelectLayout.visible = false
+	end
+    --log("EditorType", "Current type: " .. self.PlatformTypes[self.CurrentType])
+    --log("EditorDrawMode", "Current drawmode: " .. self.DrawMode)
+    --log("EditorMode", "Current mode: " .. self.Mode)
 end
 
 function Editor:Unlock()  
     self.Locked = nil
+end
+
+function Editor:SaveRoom()
+	Room.Current:Save()
 end
 
 function Editor:LockY()
@@ -121,7 +162,13 @@ function Editor:PrevPlatformType()
 end
 
 function Editor:InitGUI()
-	self.pInspector = require('guis.pinspector')
+	self.gui = require('guis.pinspector')
+	local e = {}
+	for i,v in pairs(EnemyTypes or {}) do
+		e[#e + 1] = v.Name
+	end
+	self.gui.spawnSelector.choices = e
+	self.gui.spawnSelector.selectedIndex = 1
 end
 
 function Editor:OnKeypress(key)
@@ -157,11 +204,16 @@ function Editor:OnKeypress(key)
     Game:ClampViewport()
 end
 
-function Editor:SelectAt(mx,my)
+function Editor:SelectAt(mx,my, t)
     local shapes = Game.CWorld:shapesAt(toRoom(mx,my))
     if #shapes > 0 then 
-        local o = shapes[1].Object
-        self.Selected = o
+		self.Selected = nil
+        for i,v in ipairs(shapes) do
+			if v.Object and v.Object.Type == t then
+				self.Selected = v.Object
+				break
+			end
+		end
     else
         self.Selected = nil
     end
@@ -173,13 +225,12 @@ function Editor:AddVert(x,y)
 end
 
 
-function Editor:OnClick(button,mx,my)
-    if self.Mode == "select" then
+function Editor:OnClickPlatform(button,mx,my)
+	 if self.Mode == "select" then
         if button == "l" then
-            self:SelectAt(mx,my)
+            self:SelectAt(mx,my,"platform")
         elseif button == "r" then
             self.Selected = nil
-			Enemy.Spawn("mushroom", mx / Config.Scale ,my / Config.Scale)
         end    
     elseif self.Mode == "new" then
         if button == "l" then
@@ -197,18 +248,41 @@ function Editor:OnClick(button,mx,my)
             self:Undo()
         end
     end
+end
+
+function Editor:OnClickEnemy(button,mx,my)
+	self:SelectAt(mx,my,"enemy")
+	if self.Selected then
+		self.dragging = true
+		self.lastmx, self.lastmy = toRoom(love.mouse.getPosition())	
+	end
+end
+
+function Editor:OnMouseRelease()
+	self.dragging = false
+end
+
+function Editor:OnClick(button,mx,my)
+	if self.TopMode == "platform" then
+		self:OnClickPlatform(button,mx,my)
+	else
+		self:OnClickEnemy(button,mx,my)
+	end
     
 end
 
 function Editor:GotFocus()
     self.Mode = "select"
     self.Verts = {}
+	self.gui.visible = true
 	love.mouse.setVisible(true)
+	
 end
 
 function Editor:LostFocus()
     self.Mode = "select"
     self.Verts = {}
+	self.gui.visible = false
     Game:UnlockViewport()
 	love.mouse.setVisible(false)
 end
@@ -218,14 +292,14 @@ function Editor:Finalise()
         if #self.Verts < 6 then
             log("You need at least 3 non-colinear vertices")
         else
-            Room.Current.Platforms[#Room.Current.Platforms + 1] = Platform:new(self.PlatformTypes[self.CurrentType], unpack(self.Verts))          
+            Room.Current:AddPlatform(Platform:new(self.PlatformTypes[self.CurrentType], unpack(self.Verts)))
         end
     elseif self.DrawMode == "box" then
         if not self.BottomRight or not self.TopLeft then
             log("Nope please")
         else
             local v = {self.TopLeft[1], self.TopLeft[2], self.TopLeft[1], self.BottomRight[2], self.BottomRight[1], self.BottomRight[2], self.BottomRight[1], self.TopLeft[2]}
-            Room.Current.Platforms[#Room.Current.Platforms + 1] = Platform:new(self.PlatformTypes[self.CurrentType], unpack(v))           
+            Room.Current:AddPlatform(Platform:new(self.PlatformTypes[self.CurrentType], unpack(v)))
             self.TopLeft = nil
             self.TopRight = nil
         end
