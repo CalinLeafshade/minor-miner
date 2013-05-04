@@ -31,8 +31,9 @@ function love.keypressed(key)
     if key == "q" then
         love.event.push('quit')
     end
-	if key == "p" then
-		profiler.start()
+		
+	if key == "d" then
+		Logger:Toggle()
 	end
 		if not GuiManager:OnKeypress(key) then
 			ModCon:OnKeypress(key)

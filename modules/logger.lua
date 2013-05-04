@@ -7,7 +7,11 @@ Logger.Messages = {}
 Logger.Enabled = true
 Logger.Font = love.graphics.newFont(14)
 function Logger:Init()
-    
+   self.on = true
+end
+
+function Logger:Toggle()
+	self.on = not self.on
 end
 
 function Logger:Update(dt)
@@ -20,6 +24,7 @@ function Logger:Update(dt)
 end
 
 function Logger:Draw()
+	if not self.on then return end
     local message = ""
     for i,v in pairs(self.Messages) do
         message = message .. v.text .. '\n'

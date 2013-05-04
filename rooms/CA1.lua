@@ -7,20 +7,20 @@ CA1.PlatformData = {  {"allblock", 0, 198, 0, 180, 318, 180, 318, 198,   },  {"a
 
 CA1:AddExit("left", "CA2")
 
-function CA1:Enter()
-	self.NormalMap = love.graphics.newImage("gfx/backgrounds/CA1-Normal.png")
+--function CA1:Enter()
+--	self.NormalMap = love.graphics.newImage("gfx/backgrounds/CA1-Normal.png")
 
-end
+--end
 
-function CA1:DrawBackground()
-	Shaders['normal']:send("light", {Game.Player.Position.x, self:Height() - Game.Player.Position.y});
-	Shaders['normal']:send("lightCol", {237/255, 222/255,182/255,1})
-	Shaders['normal']:send("normal", self.NormalMap)
-	Shaders['normal']:send("amb", {0,0,0,1})
-	love.graphics.setPixelEffect(Shaders['normal'])
-	love.graphics.draw(self.Background, 0,0)
-	love.graphics.setPixelEffect()
-end
+--function CA1:DrawBackground()
+	--Shaders['normal']:send("light", {Game.Player.Position.x, self:Height() - Game.Player.Position.y});
+--	Shaders['normal']:send("lightCol", {237/255, 222/255,182/255,1})
+--	Shaders['normal']:send("normal", self.NormalMap)
+--	Shaders['normal']:send("amb", {0,0,0,1})
+--	love.graphics.setPixelEffect(Shaders['normal'])
+	--love.graphics.draw(self.Background, 0,0)
+	--love.graphics.setPixelEffect()
+--end
 
 return CA1
 

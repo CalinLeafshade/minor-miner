@@ -67,7 +67,9 @@ end
 
 
 function pinspector.typeSelector:onChange()
-	Editor.Selected.Mode = Editor.PlatformTypes[self.selectedIndex]
+	if Editor.Selected and Editor.Selected.Type == "platform" then 
+		Editor.Selected.Mode = Editor.PlatformTypes[self.selectedIndex]
+	end
 end
 
 function pinspector.btnShowPlatform:onClick()
