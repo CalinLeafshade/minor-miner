@@ -24,14 +24,14 @@ function Logger:Draw()
     for i,v in pairs(self.Messages) do
         message = message .. v.text .. '\n'
     end
-		love.graphics.push()
-		love.graphics.translate(0,0)
+	love.graphics.push()
+	love.graphics.translate(0,0)
     love.graphics.setFont(self.Font)
     love.graphics.setColor(0,0,0)
     love.graphics.print(message,1,1)
     love.graphics.setColor(255,255,255)
     love.graphics.print(message,0,0)
-		love.graphics.pop()
+	love.graphics.pop()
 end
 
 function Logger:Add(token, ...)

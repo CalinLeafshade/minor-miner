@@ -160,6 +160,7 @@ function Room:Init()
 	else
 		self:InitialisePlatforms()
 	end
+	self.Enemies = {}
 end
 
 function Room:InitPlatforms(data)

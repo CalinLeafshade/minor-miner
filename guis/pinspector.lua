@@ -34,6 +34,8 @@ pinspector.typeSelector = gui.selector:new({text = "Platform type: ", choices = 
 
 pinspector.enemyLayout = gui.layout:new({x = 0, y = 0, visible = false, text = "Enemy Editor"}, pinspector.mainLayout)
 
+pinspector.lblEnemyCount = gui.label:new({x=0,y=0,clip=false,text="Enemy Count: "}, pinspector.enemyLayout)
+
 pinspector.enemySpawnLayout = gui.layout:new({x = 0, y = 0, margin=0, border = false}, pinspector.enemyLayout)
 pinspector.spawnSelector = gui.selector:new({text = "Enemy Type: ", width=150, choices = {"uninited"}},pinspector.enemySpawnLayout)
 pinspector.btnSpawn = gui.button:new({x = 0, y = 0, width=200, height=20, text="Spawn"}, pinspector.enemySpawnLayout)

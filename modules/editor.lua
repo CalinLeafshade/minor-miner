@@ -104,6 +104,8 @@ function Editor:Update(focus)
 		elseif self.Mode == "new" then
 			self.gui.typeSelector.selectedIndex = self.CurrentType
 		end		
+	else
+		self.gui.lblEnemyCount.text = "Enemy count: " .. #Room.Current.Enemies
 	end
 	
 	if self.dragging then
