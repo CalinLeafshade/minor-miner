@@ -143,7 +143,7 @@ local function GJK(shape_a, shape_b)
 	local n = 2
 	local dx,dy = -ax,-ay
 
-	-- first iteration: line case
+		-- first iteration: line case
 	ax,ay = support(shape_a, shape_b, dx,dy)
 	if vector.dot(ax,ay, dx,dy) <= 0 then
 		return false

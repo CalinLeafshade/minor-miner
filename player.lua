@@ -152,6 +152,7 @@ end
 
 function Player:Collide(shape, dx, dy)
     local object = shape.Object
+		if not object then return end
     if object.Type == "platform" then
         self:CollideWithPlatform(object, dx, dy)
     elseif object.Type == "enemy" then
@@ -162,13 +163,15 @@ end
 function Player:CheckCollisions()
   
     --platforms first
-    for i,v in pairs(Room.Current.Platforms or {}) do
-        local c,dx,dy = v.Collider:collidesWith(self.Collider)
+		
+    for v in pairs(self.Collider:neighbors()) do
+		
+        local c,dx,dy = v:collidesWith(self.Collider)
         if c then
-            self:Collide(v.Collider,-dx,-dy)
+            self:Collide(v,-dx,-dy)
         end
     end
-  
+		
   --TODO Enemy collision
 end
 
@@ -232,6 +235,12 @@ function Player:Animate(dt)
 
 end
 
+function Player:Bomb(throw)
+	local v = throw and vector.new(100 * (self:Direction() and -1 or 1), -100) or vector.new(0,0)
+	local x,y = self.Collider:center()
+	Room.Current:AddObject(Bomb:new({Velocity = v, x=x,y=y}))
+end
+
 
 function Player:Update(dt)
 
@@ -239,6 +248,10 @@ function Player:Update(dt)
         if self:CanAttack() then self:Melee() end
     end
   
+		if Input:Is("bomb") then
+			self:Bomb(not Input:Is("down"))
+		end
+		
     if Input:Is("up") and self.CanSave() then
         Game:Save()
     end

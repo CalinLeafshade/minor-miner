@@ -22,25 +22,8 @@ function Room:Height()
     return self.Background:getHeight()
 end
 
-function Room:SavePlatforms()
-    local filename = "lscripts/Rooms/Platforms" .. self.ID .. ".lua"
-    local f,err = io.open(filename,"w")
-    f:write("-- Generated At " .. os.date("%I:%M:%S") .. "\n")
-    f:write("PlatformData[" .. self.ID .. "] = {")
-    PlatformData[self.ID] = {}
-    for i,v in ipairs(self.Platforms or {}) do
-        f:write("  {")
-        f:write("\"" .. v.Mode .. "\"")
-        f:write(", ")
-        PlatformData[self.ID][#PlatformData[self.ID] + 1] = {v.Collider._polygon:unpack()}
-        for _,p in pairs({v.Collider._polygon:unpack()}) do
-            f:write(p .. ", ")
-        end
-        f:write("  },")
-    end
-    f:write("}")
-    f:close()
-    log(false, "Room saved")
+function Room:AddObject(o)
+	self.SceneObjects[#self.SceneObjects + 1] = o
 end
 
 function Room:Save()
@@ -107,6 +90,12 @@ function Room:BaseUpdate(dt)
 	end
 end
 
+function Room:DrawSceneObjects()
+	for i,v in ipairs(self.SceneObjects) do
+		v:Draw()
+	end
+end
+
 function Room:DrawBackground()
     if self.Layers then
         for i = 1, #self.Layers do
@@ -160,7 +149,7 @@ function Room:Init()
 	else
 		self:InitialisePlatforms()
 	end
-	self.Enemies = {}
+	self.SceneObjects = {}
 end
 
 function Room:InitPlatforms(data)

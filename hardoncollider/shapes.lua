@@ -99,13 +99,23 @@ end
 --
 function ConvexPolygonShape:support(dx,dy)
 	local v = self._polygon.vertices
+	if v == nil or #v == 0 then
+		sdkjfhs()
+	end
 	local max, vmax = -math_huge
+	
 	for i = 1,#v do
 		local d = vector.dot(v[i].x,v[i].y, dx,dy)
-		if d > max then
+		assert(v[i].x,"x")
+		assert(v[i].y,"y")
+		assert(dx==dx,"dx")
+		assert(dy==dy,"dy")
+		if d >= max then
+			
 			max, vmax = d, v[i]
 		end
 	end
+	
 	return vmax.x, vmax.y
 end
 

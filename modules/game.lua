@@ -5,6 +5,7 @@ Platform = require("platform")
 Game = require("module"):new("game")
 vector = require("vector")
 Enemy = require('enemy')
+require('bomb')
 require('gamestate')
 
 local HC = require("hardoncollider")
@@ -74,7 +75,7 @@ function Game:InitGUI()
 end
 
 function Game:Init()
-    self.CWorld = HC(100, on_collide, stop_colliding)
+    self.CWorld = HC(50, on_collide, stop_colliding)
     self.Player = require("player")
     self.Viewport = {x=0,y=0}
     self.Water = require('water')
@@ -112,10 +113,12 @@ function Game:CheckExits()
   
 end
 
-function Game:UpdateEnemies(dt)
-	for i,v in ipairs(Room.Current.Enemies or {}) do
+function Game:UpdateScene(dt)
+	bombIterations = 0
+	for i,v in ipairs(Room.Current.SceneObjects or {}) do
 		v:Update(dt)
 	end
+	log("bit", "bit", bombIterations)
 end
 
 function Game:Update(dt, focus)
@@ -129,8 +132,8 @@ function Game:Update(dt, focus)
         self.Player:Update(dt)
         self:CheckExits()
         self.Water:Update(dt)
-		self:UpdateEnemies(dt)
-		Room.Current:BaseUpdate(dt)
+				self:UpdateScene(dt)
+				Room.Current:BaseUpdate(dt)
         Room.Current:Update(dt)
         if not self.Viewport.Locked then
             local x, y = self.Player.Collider:center()
@@ -161,11 +164,7 @@ function Game:NewGame(slot)
     self.State = GameState:new(slot)
 end
 
-function Game:DrawEnemies()
-	for i,v in ipairs(Room.Current.Enemies or {}) do
-		v:Draw()
-	end
-end
+
 
 function Game:Draw(focus)
     if self.Visible then        
@@ -182,7 +181,7 @@ function Game:Draw(focus)
             Room.Current:DrawBackground()
             Room.Current:PrePlayerDraw()
             self.Player:Draw()
-			self:DrawEnemies()
+						Room.Current:DrawSceneObjects()
             Room.Current:PostPlayerDraw()
         end
         

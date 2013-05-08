@@ -6,8 +6,10 @@ local Input =
     {
         jump="z",
         melee="x",
+				bomb="c",
         left="left",
         right="right",
+				down="down",
         menu="escape",
         up = "up"
     },
@@ -36,6 +38,8 @@ function Input:Is(command)
         return self:NewKeyDown("jump")
     elseif command == "melee" then 
         return self:NewKeyDown("melee")
+		elseif command == "bomb" then 
+        return self:NewKeyDown("bomb")
     else 
         return love.keyboard.isDown(self.Keys[command])
     end

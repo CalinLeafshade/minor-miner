@@ -37,6 +37,7 @@ function Platform:new (...)
         end
     end
     o.Collider = Game.CWorld:addPolygon(unpack(params))
+		Game.CWorld:addToGroup("platforms",o.Collider)
     o.Collider.Object = o
     return o
 end

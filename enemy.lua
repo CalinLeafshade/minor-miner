@@ -135,8 +135,7 @@ end
 function Enemy.Spawn(name, x, y)
 	local e = EnemyTypes[name]:new()
 	e:MoveTo(x,y)
-	Room.Current.Enemies = Room.Current.Enemies or {}
-	Room.Current.Enemies[#Room.Current.Enemies + 1] = e
+	Room.Current:AddObject(e)
 end
 
 

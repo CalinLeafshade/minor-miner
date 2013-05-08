@@ -116,6 +116,21 @@ function Vector:cross(other)
     return self.x * other.y - self.y * other.x
 end
 
+function Vector:dotp(other)
+	return self.x * other.x + self.y * other.y
+end
+
+function Vector:reflect(normal)
+	   
+    local l = self:normalized()
+    normal:normalize()
+ 
+    local r = -2 * (l:dotp(normal))*normal + l;
+ 
+    r = r * self:len()
+    return r
+end
+
 setmetatable(Vector, { __call = function(_, ...) return Vector.new(...) end })
 
 return Vector

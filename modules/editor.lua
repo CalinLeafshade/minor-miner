@@ -105,7 +105,18 @@ function Editor:Update(focus)
 			self.gui.typeSelector.selectedIndex = self.CurrentType
 		end		
 	else
-		self.gui.lblEnemyCount.text = "Enemy count: " .. #Room.Current.Enemies
+		
+		local function enemyCount()
+			local c = 0
+			for i,v in ipairs(Room.Current.SceneObjects) do
+				if v.Type == "enemy" then
+					c = c + 1
+				end
+			end
+			return c
+		end
+		
+		self.gui.lblEnemyCount.text = "Enemy count: " .. enemyCount()
 	end
 	
 	if self.dragging then
