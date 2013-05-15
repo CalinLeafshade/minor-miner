@@ -172,6 +172,12 @@ function Room:Clean()
     self.Layers = nil
     self.Overlay = nil
     Game.CWorld:remove(unpack(self.Shapes))
+		for i,v in ipairs(self.SceneObjects) do
+			if v.Collider then
+				Game.CWorld:remove(v.Collider)
+			end
+		end
+		self.SceneObjects = nil
 end
 
 function Room:InitialisePlatforms()

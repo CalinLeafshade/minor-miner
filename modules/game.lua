@@ -23,7 +23,9 @@ end
 -- Continued description
 -- @param param  param description 
 function Game:ChangeRoom(roomName, edge, enMult, exMult)
-	
+		
+		self.PSM:clear()
+		
     enMult = enMult or 0
     exMult = exMult or 0
     if not Room.Rooms[roomName] then
@@ -83,6 +85,7 @@ function Game:Init()
     self.Gravity = vector.new(0,1200)
     self.Canvas = love.graphics.newCanvas(320,200)
     self.Canvas:setFilter("nearest", "nearest")
+		self.PSM = require('particlesystem')
 	Enemy:GetTypes()
 end
 
@@ -114,11 +117,9 @@ function Game:CheckExits()
 end
 
 function Game:UpdateScene(dt)
-	bombIterations = 0
 	for i,v in ipairs(Room.Current.SceneObjects or {}) do
 		v:Update(dt)
 	end
-	log("bit", "bit", bombIterations)
 end
 
 function Game:Update(dt, focus)
@@ -141,6 +142,7 @@ function Game:Update(dt, focus)
             self.Viewport.y = y - 100
         end
         self:ClampViewport()
+				self.PSM:update(dt)
         log("viewport", "viewport: ", self.Viewport.x, self.Viewport.y)
     end
 end
@@ -179,9 +181,11 @@ function Game:Draw(focus)
         if Room.Current then
             Room.Current:PreBackgroundDraw()
             Room.Current:DrawBackground()
+						
             Room.Current:PrePlayerDraw()
             self.Player:Draw()
 						Room.Current:DrawSceneObjects()
+						self.PSM:draw()
             Room.Current:PostPlayerDraw()
         end
         

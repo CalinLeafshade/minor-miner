@@ -136,18 +136,22 @@ function Player:CollideWithPlatform(object, dx, dy)
     end
 end
 
+function Player:ThrowBack(dx, dy, invTime)
+	self.Velocity.x = dx
+	self.Velocity.y = dy
+	self.Hurt = true
+	self.Invulnerable = true
+	self.OnGround = false
+	self.InvTimer = invTime or 3
+end
+
 function Player:CollideWithEnemy(object, dx, dy)
     
     if self.Invulnerable then return end -- no effect
     
     self.Collider:move(dx,dy)
-    self.Invulnerable = true
-    self.InvTimer = 40
-    self.Velocity.x = dx > 0 and 50 or -50
-    self.VelY = -30
-    self.Hurt = true
-    self.OnGround = false
-    self:Damage(1)
+    self:ThrowBack(dx > 0 and 300 or -300, -300, 5)
+    --self:Damage(1)
 end
 
 function Player:Collide(shape, dx, dy)
@@ -283,7 +287,7 @@ function Player:Update(dt)
             self.Acceleration.x = -self.Speed
         elseif Input:Is("right") then
             self.Acceleration.x = self.Speed
-        else
+        elseif not self.Hurt then
             local drag = self.OnGround and self.GroundDrag or self.AirDrag
             drag = 1 - ((1 - drag) * dt) * 60
             self.Velocity.x = self.Velocity.x * drag
@@ -349,8 +353,8 @@ function Player:Update(dt)
     self.Position.x, self.Position.y = self.Collider:center()
 
     if self.InvTimer > 0 and not self.Hurt then
-        self.InvTimer = self.InvTimer - 1
-    elseif self.InvTimer == 0 then
+        self.InvTimer = self.InvTimer - dt
+    elseif self.InvTimer <= 0 then
         self.Invulnerable = false
     end
 
@@ -359,7 +363,7 @@ end
 
 function Player:Draw()
     if self.Animation then
-        local alpha = self.Invulnerable and (math.sin(love.timer.getTime() * 60) + 1) / 2 * 255 or 255
+        local alpha = self.Invulnerable and (math.sin(love.timer.getTime() * 30) + 1) / 2 * 255 or 255
         local tint = Room.Current.Tint or White
         love.graphics.setColor(tint[1],tint[2],tint[3], alpha)  
         self.Animations[self.Animation]:Draw(self.Collider:center())

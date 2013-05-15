@@ -120,7 +120,9 @@ end
 
 function Enemy:Draw(dt)
 	if self.Animation then
-		self.Animation:Draw(self.Collider:center())
+		local x,y = self.Collider:center()
+		love.graphics.setColor(Color.White:unpack())
+		self.Animation:Draw(x,y)
 	elseif self.Collider then
 		self.Collider:Draw()
 	end

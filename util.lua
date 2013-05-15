@@ -182,7 +182,7 @@ end
 function toRoom(x,y,useScale)
     useScale = useScale or true
     local scale = useScale and Config.Scale or 1
-    return (x / scale) + Game.Viewport.x, (y / scale) + Game.Viewport.y
+    return math.floor((x / scale) + Game.Viewport.x), math.floor((y / scale) + Game.Viewport.y)
 end
 
 --- Converts room coordinates to screen coordinates
