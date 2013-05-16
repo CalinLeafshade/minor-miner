@@ -1,6 +1,6 @@
 
 local vector = require('vector')
-
+local animation = require('animation')
 Spark = {}
 
 function Spark:new(x,y,vx,vy)
@@ -44,23 +44,39 @@ end
 
 function Spark:draw()
 	local x,y = self.Collider:center()
-	love.graphics.setColor(255,0,0)
+	love.graphics.setLineStyle("rough")
+	love.graphics.setColor(234,175,46, 127)
+	love.graphics.setBlendMode("additive")
 	love.graphics.line(x,y,x - self.Velocity.x / 50, y - self.Velocity.y / 50)
+	love.graphics.setBlendMode("alpha")
 end
 
 function Spark:kill()
 	self.dead = true
+	Game.CWorld:remove(self.Collider)
 end
 
 Bomb = 
 {
-	Texture = love.graphics.newImage("gfx/bomb.png")
+	SparkLoc = 
+	{
+		{4,3},
+		{4,5},
+		{5,6},
+		{7,7},
+		{8,6},
+		{9,5},
+		{11,6},
+		{12,8},
+		{11,10}
+	}
 }
 
 function Bomb:new(o)
 	local o = o or {}
 	setmetatable(o, self)
 	self.__index = self
+	o.Animation = animation:new("gfx/bomb.png", 15, 13, {Speed = 0.5})
 	o.Velocity = o.Velocity or vector.new(0,0)
 	o.Collider = Game.CWorld:addCircle(0,0,5)
 	Game.CWorld:addToGroup("bombs", o.Collider)
@@ -89,10 +105,11 @@ function Bomb:Update(dt)
 	if not self.Collider then return end
 	
 	local x,y = self.Collider:center()
-	
+	local xx,yy = self.Collider:bbox()
 	if self.lastSpark <= 0 then
-		Game.PSM:add(Spark:new(x - 3,y - 5, math.random(-100,100), math.random(0, -300)))
-		Game.PSM:add(Spark:new(x - 3,y - 5, math.random(-100,100), math.random(0, -300)))
+		
+		Game.PSM:add(Spark:new(xx + self.SparkLoc[self.Animation.Frame][1] - 1, yy + self.SparkLoc[self.Animation.Frame][2], math.random(150) - 75, 0 - math.random(150)))
+		Game.PSM:add(Spark:new(xx + self.SparkLoc[self.Animation.Frame][1] - 1, yy + self.SparkLoc[self.Animation.Frame][2], math.random(150) - 75, 0 - math.random(150)))
 		self.lastSpark = 0.1
 	else
 		self.lastSpark = self.lastSpark - dt
@@ -121,11 +138,12 @@ function Bomb:Update(dt)
 	
 	end
 	self.lastX, self.lastY = x,y
-
+	self.Animation:Update(dt)
 end
 
 function Bomb:Draw()
 	local x,y = self.Collider:center()
-	x,y = x - self.Width /2, y - self.Height / 2
-	love.graphics.draw(self.Texture,math.floor(x),math.floor(y))
+	love.graphics.setColor(Color.White:unpack())
+	self.Animation:Draw(x,y)
+	
 end

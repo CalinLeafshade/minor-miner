@@ -3,6 +3,35 @@ local vector = require('vector')
 local animation = require('animation')
 local Game = ModCon.ByName["game"]
 
+local Dust = {}
+
+function Dust:new(x,y)
+	local o = {}
+	setmetatable(o, self)
+	self.__index = self
+	o.x = x
+	o.y = y
+	o.life = 0
+	o.shade = math.random(100,150)
+	return o
+end
+
+function Dust:update(dt)
+	self.life = self.life + dt * 2
+	self.y = self.y - 3 * dt
+end
+
+function Dust:draw()
+	local alpha = lerp(255,0,self.life)
+	if alpha < 0 then
+		self.dead = true
+		return
+	end
+	love.graphics.setColor(self.shade,self.shade,self.shade,alpha)
+	love.graphics.setLineStyle("rough")
+	love.graphics.line(self.x,self.y,self.x + 0.5,self.y + 0.5)
+end
+
 local Player = 
 {
     CollVec = vector.new(0,0),
@@ -32,7 +61,8 @@ local Player =
     HP = 25,
     MaxHP = 25,
     Power = 100,
-    InvTimer = 0
+    InvTimer = 0,
+		lastDust = 0
 }
 
 function Player:CanSave()
@@ -77,7 +107,8 @@ function Player:Jump()
         self.Somersaulting = true
         self.Animations["somersault"].Frame = 1
         self.Velocity.x = -self.Velocity.x * 0.8
-  end
+		end
+		self.Skidding = false
 end
 
 function Player:DoubleJump()
@@ -270,6 +301,17 @@ function Player:Update(dt)
         self.JumpTimer = 0
     end
   
+		if self.Skidding then
+			if self.lastDust <= 0 then
+				local x,y = self.Collider:center()
+				Game.PSM:add(Dust:new(math.random() + x + (self:Direction() and 7 or -7), math.random() + y + 10))
+				Game.PSM:add(Dust:new(math.random() + x + (self:Direction() and 7 or -7), math.random() + y + 10))
+				self.lastDust = 0.01
+			else
+				self.lastDust = self.lastDust - dt
+			end
+		end
+		
     --Gravity
     
     if not self.OnGround and self.JumpTimer <= 0 then

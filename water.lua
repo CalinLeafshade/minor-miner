@@ -78,7 +78,7 @@ function Water:Draw()
     self.shader:send('camera', {Game.Viewport.x / Room.Current:Width(), Game.Viewport.y / Room.Current:Height()})
 
     local lg = love.graphics
-
+		lg.setLineStyle("smooth")
     lg.setBlendMode("additive")
     for _,v in ipairs(self.Rects) do
         lg.setColor(121,153,171,50)
