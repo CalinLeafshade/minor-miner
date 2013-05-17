@@ -279,6 +279,8 @@ end
 
 function Player:Update(dt)
 
+		self.Skidding = self.Skidding and self.OnGround
+
     if Input:Is("melee") then
         if self:CanAttack() then self:Melee() end
     end

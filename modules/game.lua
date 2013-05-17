@@ -117,7 +117,7 @@ function Game:CheckExits()
 end
 
 function Game:UpdateScene(dt)
-	for i,v in ipairs(Room.Current.SceneObjects or {}) do
+	for i,v in pairs(Room.Current.SceneObjects or {}) do
 		v:Update(dt)
 	end
 end

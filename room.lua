@@ -23,8 +23,16 @@ function Room:Height()
 end
 
 function Room:AddObject(o)
-	self.SceneObjects[#self.SceneObjects + 1] = o
+	self.SceneObjects[o] = o
 end
+
+function Room:RemoveObject(o)
+	self.SceneObjects[o] = nil
+	if o.Collider then
+		Game.CWorld:remove(o.Collider)
+	end
+end
+	
 
 function Room:Save()
 	-- build table
@@ -91,7 +99,7 @@ function Room:BaseUpdate(dt)
 end
 
 function Room:DrawSceneObjects()
-	for i,v in ipairs(self.SceneObjects) do
+	for i,v in pairs(self.SceneObjects) do
 		v:Draw()
 	end
 end
@@ -172,7 +180,7 @@ function Room:Clean()
     self.Layers = nil
     self.Overlay = nil
     Game.CWorld:remove(unpack(self.Shapes))
-		for i,v in ipairs(self.SceneObjects) do
+		for i,v in pairs(self.SceneObjects) do
 			if v.Collider then
 				Game.CWorld:remove(v.Collider)
 			end

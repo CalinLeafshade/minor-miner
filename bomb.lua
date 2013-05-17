@@ -44,11 +44,22 @@ end
 
 function Spark:draw()
 	local x,y = self.Collider:center()
-	love.graphics.setLineStyle("rough")
-	love.graphics.setColor(234,175,46, 127)
-	love.graphics.setBlendMode("additive")
-	love.graphics.line(x,y,x - self.Velocity.x / 50, y - self.Velocity.y / 50)
-	love.graphics.setBlendMode("alpha")
+	
+	local lg = love.graphics
+	lg.setLineStyle("rough")
+	lg.setBlendMode("additive")
+	lg.setColor(234,175,46, 10)
+	lg.circle("fill",x,y,5,8)
+	lg.setLineWidth(2)
+	lg.setColor(234,175,46, 50)
+	lg.line(x,y,x - self.Velocity.x / 40, y - self.Velocity.y / 40)
+	lg.setColor(234,175,46, 127)
+	lg.setLineWidth(1)
+	lg.line(x,y,x - self.Velocity.x / 50, y - self.Velocity.y / 50)
+	lg.line(x,y,x - self.Velocity.x / 70, y - self.Velocity.y / 70)
+	
+	lg.line(x,y,x - self.Velocity.x / 90, y - self.Velocity.y / 90)
+	lg.setBlendMode("alpha")
 end
 
 function Spark:kill()
@@ -70,18 +81,25 @@ Bomb =
 		{12,8},
 		{11,10}
 	}
+	
 }
 
 function Bomb:new(o)
 	local o = o or {}
 	setmetatable(o, self)
 	self.__index = self
-	o.Animation = animation:new("gfx/bomb.png", 15, 13, {Speed = 0.5})
+	o.Animations = 
+		{
+			bomb = animation:new("gfx/bomb.png", 15, 13, {Speed = 0.5}),
+			explosion = animation:new("gfx/explosion.png", 30, 39, {Speed = 0.07, Offset = {15,32}}),
+		}
+	o.Animation = o.Animations["bomb"]
 	o.Velocity = o.Velocity or vector.new(0,0)
 	o.Collider = Game.CWorld:addCircle(0,0,5)
 	Game.CWorld:addToGroup("bombs", o.Collider)
 	o.Width = 10
 	o.Height = 10
+	o.State = "bomb"
 	o.Collider:moveTo(o.x, o.y)
 	o.normalVector = vector.new(0,0)
 	o.lastSpark = 0
@@ -106,15 +124,16 @@ function Bomb:Update(dt)
 	
 	local x,y = self.Collider:center()
 	local xx,yy = self.Collider:bbox()
-	if self.lastSpark <= 0 then
-		
-		Game.PSM:add(Spark:new(xx + self.SparkLoc[self.Animation.Frame][1] - 1, yy + self.SparkLoc[self.Animation.Frame][2], math.random(150) - 75, 0 - math.random(150)))
-		Game.PSM:add(Spark:new(xx + self.SparkLoc[self.Animation.Frame][1] - 1, yy + self.SparkLoc[self.Animation.Frame][2], math.random(150) - 75, 0 - math.random(150)))
-		self.lastSpark = 0.1
-	else
-		self.lastSpark = self.lastSpark - dt
+	if self.State == "bomb" then
+		if self.lastSpark <= 0 then
+			
+			Game.PSM:add(Spark:new(xx + self.SparkLoc[self.Animation.Frame][1] - 1, yy + self.SparkLoc[self.Animation.Frame][2], math.random(150) - 75, 0 - math.random(150)))
+			Game.PSM:add(Spark:new(xx + self.SparkLoc[self.Animation.Frame][1] - 1, yy + self.SparkLoc[self.Animation.Frame][2], math.random(150) - 75, 0 - math.random(150)))
+			self.lastSpark = 0.1
+		else
+			self.lastSpark = self.lastSpark - dt
+		end
 	end
-	
 	
 	if x ~= self.lastX or y ~= self.lastY then -- moved
 	
@@ -138,12 +157,27 @@ function Bomb:Update(dt)
 	
 	end
 	self.lastX, self.lastY = x,y
-	self.Animation:Update(dt)
+	if self.Animation:Update(dt) then
+	
+		if self.State == "bomb" then
+			self:Explode()
+		elseif self.State == "explosion" then
+			self:Kill()
+		end
+	end
+end
+
+function Bomb:Explode()
+	self.Animation = self.Animations['explosion']
+	self.State = "explosion"
+end
+
+function Bomb:Kill()
+	Room.Current:RemoveObject(self)
 end
 
 function Bomb:Draw()
 	local x,y = self.Collider:center()
 	love.graphics.setColor(Color.White:unpack())
 	self.Animation:Draw(x,y)
-	
 end
