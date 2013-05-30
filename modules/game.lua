@@ -5,6 +5,7 @@ Platform = require("platform")
 Game = require("module"):new("game")
 vector = require("vector")
 Enemy = require('enemy')
+
 require('bomb')
 require('gamestate')
 
@@ -80,6 +81,7 @@ function Game:Init()
     self.CWorld = HC(50, on_collide, stop_colliding)
     self.Player = require("player")
     self.Viewport = {x=0,y=0}
+		self.Bubbles = require('bubbles')
     self.Water = require('water')
     self.Water:Init()
     self.Gravity = vector.new(0,1200)
@@ -128,8 +130,10 @@ function Game:Update(dt, focus)
         self.NewRoom = false
         dt = 0
     end
+		
     if focus and not self.Paused then
         --self.CWorld:update(dt)
+				self.Bubbles:update(dt)
         self.Player:Update(dt)
         self:CheckExits()
         self.Water:Update(dt)
@@ -188,12 +192,13 @@ function Game:Draw(focus)
 						self.PSM:draw()
             Room.Current:PostPlayerDraw()
         end
-        
+        self.Bubbles:draw()
         love.graphics.pop() 
         self.Water:Draw()
         if Room.Current.Overlay then 
-            love.graphics.draw(Room.Current.Overlay,0,0) 
+            love.graphics.draw(Room.Current.Overlay,-self.Viewport.x,-self.Viewport.y) 
         end
+				
         love.graphics.setCanvas()
         love.graphics.push()
 				love.graphics.translate(Config.xOffset or 0, Config.yOffset or 0)

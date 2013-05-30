@@ -167,6 +167,13 @@ function Player:CollideWithPlatform(object, dx, dy)
     end
 end
 
+function Player:Damage(pwr,dx,dy, dmgType)
+	dmgType = dmgType or "normal"
+	local x,y = self.Collider:center()
+	self:ThrowBack(dx,dy)
+	addBubble(pwr,x,y)
+end
+
 function Player:ThrowBack(dx, dy, invTime)
 	self.Velocity.x = dx
 	self.Velocity.y = dy
@@ -417,5 +424,7 @@ function Player:Draw()
         self.Animations[self.Animation]:Draw(self.Collider:center())
     end
 end
+
+Player.Collider.Object = Player
 
 return Player

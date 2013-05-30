@@ -73,6 +73,10 @@ function Enemy:Remove()
 	end
 end
 
+function Enemy:Damage(pwr, dmgType)
+	
+end
+
 function Enemy:ResolveAndMove(dt)
 	if not self.Collider then return end
 	

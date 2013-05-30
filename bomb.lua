@@ -80,7 +80,8 @@ Bomb =
 		{11,6},
 		{12,8},
 		{11,10}
-	}
+	},
+	blastRadius = 10
 	
 }
 
@@ -174,6 +175,21 @@ end
 function Bomb:Explode()
 	self.Animation = self.Animations['explosion']
 	self.State = "explosion"
+	local x,y = self.Collider:center()
+	local blast = Game.CWorld:addCircle(x,y,self.blastRadius)
+	for v in pairs(blast:neighbors()) do
+		if blast:collidesWith(v) then
+			local obj = v.Object
+			if obj then
+				if type(obj.Damage) == "function" then
+					local xx,yy = v:center()
+					local vec = vector.new(xx - x,yy - y):normalized() * 300
+					obj:Damage(30, vec.x, vec.y,"explosive")
+				end
+			end
+		end
+	end
+	Game.CWorld:remove(blast)
 end
 
 function Bomb:Kill()

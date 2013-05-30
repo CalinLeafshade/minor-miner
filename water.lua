@@ -15,7 +15,7 @@ function Water:Init()
         }
     ]]
     self.Rects = {}
-    self.Canvas = love.graphics.newCanvas(320,200)
+    self.Canvas = love.graphics.newCanvas(320,180)
     self.BubbleTexture = love.graphics.newImage("gfx/bubble.png")
     self.Bubbles = {}
     self.LastBubble = 0
@@ -67,7 +67,7 @@ function Water:PreDraw()
     self.oldCanvas = love.graphics.getCanvas()
     love.graphics.setCanvas(self.Canvas)
     love.graphics.setColor(0,0,0)
-    love.graphics.rectangle("fill",0,0,320,200)
+    love.graphics.rectangle("fill",0,0,320,180)
     love.graphics.setColor(255,255,255)
 end
 

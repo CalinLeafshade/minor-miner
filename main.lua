@@ -1,11 +1,13 @@
 -- main.lua
 -- Entry point
 
+Fonts = require('fonts')
 Input = require('input')
 require('util')
 require('color')
 Config = require('config')
 GuiManager = require('guimanager')
+
 
 
 function love.load()
