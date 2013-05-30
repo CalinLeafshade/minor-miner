@@ -44,9 +44,9 @@ function Game:ChangeRoom(roomName, edge, enMult, exMult)
         local h = Room.Current:Height()
         
         if edge == "left" then
-            self.Player.Collider:move(w, (exMult - enMult) * 200)
+            self.Player.Collider:move(w, (exMult - enMult) * 180)
         elseif edge == "right" then
-            self.Player.Collider:move(-last:Width(), (exMult - enMult) * 200)
+            self.Player.Collider:move(-last:Width(), (exMult - enMult) * 180)
         elseif edge == "top" then
             self.Player.Collider:move((exMult - enMult) * 320, h)
         elseif edge == "bottom" then
@@ -83,7 +83,7 @@ function Game:Init()
     self.Water = require('water')
     self.Water:Init()
     self.Gravity = vector.new(0,1200)
-    self.Canvas = love.graphics.newCanvas(320,200)
+    self.Canvas = love.graphics.newCanvas(320,180)
     self.Canvas:setFilter("nearest", "nearest")
 		self.PSM = require('particlesystem')
 	Enemy:GetTypes()
@@ -93,7 +93,7 @@ function Game:CheckExits()
     
     local r = Room.Current
     local x,y = self.Player.Collider:center()
-    local multY = math.floor(y / 200)
+    local multY = math.floor(y / 180)
     local multX = math.floor(x / 320)
     local exit = ""
     local mult = 0
@@ -139,7 +139,7 @@ function Game:Update(dt, focus)
         if not self.Viewport.Locked then
             local x, y = self.Player.Collider:center()
             self.Viewport.x = x - 160
-            self.Viewport.y = y - 100
+            self.Viewport.y = y - 90
         end
         self:ClampViewport()
 				self.PSM:update(dt)
@@ -149,7 +149,7 @@ end
 
 function Game:ClampViewport()
     self.Viewport.x = clamp(self.Viewport.x,0,Room.Current:Width() - 320)
-    self.Viewport.y = clamp(self.Viewport.y,0,Room.Current:Height() - 200)
+    self.Viewport.y = clamp(self.Viewport.y,0,Room.Current:Height() - 180)
 end
 
 function Game:LockViewport(x,y)
@@ -173,7 +173,7 @@ function Game:Draw(focus)
         love.graphics.setCanvas(self.Canvas)
         love.graphics.clear()
         love.graphics.setColor(0,0,0)
-        love.graphics.rectangle("fill",0,0,320,200)
+        love.graphics.rectangle("fill",0,0,320,180)
         love.graphics.push()
         love.graphics.translate(-self.Viewport.x, -self.Viewport.y)
         love.graphics.setColor(255,255,255)

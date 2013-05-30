@@ -107,7 +107,7 @@ function Bomb:new(o)
 end
 
 function Bomb:PlatformCollide(v,dx,dy)
-	log(self, "collision")
+	
 	local normal = vector.new(dx,dy):normalized()
 	self.Collider:move(dx,dy)
 	self.Velocity = self.Velocity:reflect(normal) * 0.5
@@ -142,7 +142,11 @@ function Bomb:Update(dt)
 			self.Velocity = self.Velocity + Game.Gravity * dt
 		end
 		
-		self.Collider:move(self.Velocity.x * dt, self.Velocity.y * dt)
+		local dx, dy = self.Velocity.x * dt, self.Velocity.y * dt
+		if dx ~= dx then dx = 0 end
+		if dy ~= dy then dy = 0 end
+		
+		self.Collider:move(dx,dy)
 		
 		--for i,v in ipairs(Room.Current.Platforms or {}) do
 		for v in pairs(self.Collider:neighbors()) do

@@ -306,8 +306,12 @@ function Player:Update(dt)
 		if self.Skidding then
 			if self.lastDust <= 0 then
 				local x,y = self.Collider:center()
-				Game.PSM:add(Dust:new(math.random() + x + (self:Direction() and 7 or -7), math.random() + y + 10))
-				Game.PSM:add(Dust:new(math.random() + x + (self:Direction() and 7 or -7), math.random() + y + 10))
+				x = x + math.random() + (self:Direction() and 7 or -7)
+				y = y + math.random() + 10
+				if self.Ground:contains(x,y + 1) then
+					Game.PSM:add(Dust:new(x,y))
+					Game.PSM:add(Dust:new(x,y))
+				end
 				self.lastDust = 0.01
 			else
 				self.lastDust = self.lastDust - dt

@@ -40,7 +40,7 @@ end
 function Config:InitGfx()
 
 			self.xOffset, self.yOffset = nil, nil
-			local w, h = 320 * self.Scale, 200 * self.Scale
+			local w, h = 320 * self.Scale, 180 * self.Scale
 			
 			if self.Fullscreen then
 				local modes = love.graphics.getModes()
