@@ -5,6 +5,7 @@ Fonts = require('fonts')
 Input = require('input')
 require('util')
 require('color')
+require('collisions')
 Config = require('config')
 GuiManager = require('guimanager')
 

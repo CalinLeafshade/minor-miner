@@ -26,6 +26,7 @@ end
 function Game:ChangeRoom(roomName, edge, enMult, exMult)
 		
 		self.PSM:clear()
+		self.Bubbles:clear()
 		
     enMult = enMult or 0
     exMult = exMult or 0
@@ -82,12 +83,15 @@ function Game:Init()
     self.Player = require("player")
     self.Viewport = {x=0,y=0}
 		self.Bubbles = require('bubbles')
+		self.Bars = require('bars')
     self.Water = require('water')
     self.Water:Init()
     self.Gravity = vector.new(0,1200)
     self.Canvas = love.graphics.newCanvas(320,180)
     self.Canvas:setFilter("nearest", "nearest")
 		self.PSM = require('particlesystem')
+		self.screenShakeOffset = 0
+		self.screenShakeTimer = 0
 	Enemy:GetTypes()
 end
 
@@ -124,6 +128,12 @@ function Game:UpdateScene(dt)
 	end
 end
 
+function Game:ShakeScreen(time)
+	self.screenShakeTimer = time
+	self.screenShakeLastUpdate = love.timer.getTime()
+	self.screenShakeOffset = 0
+end
+
 function Game:Update(dt, focus)
 	
     if self.NewRoom then
@@ -134,18 +144,32 @@ function Game:Update(dt, focus)
     if focus and not self.Paused then
         --self.CWorld:update(dt)
 				self.Bubbles:update(dt)
+				self.Bars:update(dt)
         self.Player:Update(dt)
         self:CheckExits()
         self.Water:Update(dt)
 				self:UpdateScene(dt)
 				Room.Current:BaseUpdate(dt)
         Room.Current:Update(dt)
+				
         if not self.Viewport.Locked then
             local x, y = self.Player.Collider:center()
             self.Viewport.x = x - 160
             self.Viewport.y = y - 90
+						
         end
+				self.screenShakeTimer = math.max(self.screenShakeTimer - dt,0)
         self:ClampViewport()
+				
+				if self.screenShakeTimer > 0 then
+					if love.timer.getTime() - self.screenShakeLastUpdate > 0.05 then
+						self.screenShakeOffset = self.screenShakeOffset >= 0 and -math.random(3) or math.random(3)
+						self.screenShakeLastUpdate = love.timer.getTime()
+					end
+					log("shakeScreen","ss",  self.screenShakeOffset)
+					self.Viewport.y = self.Viewport.y + self.screenShakeOffset
+				end
+				
 				self.PSM:update(dt)
         log("viewport", "viewport: ", self.Viewport.x, self.Viewport.y)
     end
@@ -198,12 +222,13 @@ function Game:Draw(focus)
         if Room.Current.Overlay then 
             love.graphics.draw(Room.Current.Overlay,-self.Viewport.x,-self.Viewport.y) 
         end
-				
+				self.Bars:draw()
         love.graphics.setCanvas()
         love.graphics.push()
 				love.graphics.translate(Config.xOffset or 0, Config.yOffset or 0)
         love.graphics.scale(Config.Scale, Config.Scale) 
         --love.graphics.draw(self.Canvas,Config.xOffset or 0, Config.yOffset or 0)
+				love.graphics.setColor(Color.White:unpack())
 				love.graphics.draw(self.Canvas,0,0)
 				
         love.graphics.pop() 

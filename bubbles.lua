@@ -3,9 +3,9 @@
 local bubbles =
 {
 	bubbles = {},
-	lifeTime = 5,
+	lifeTime = 1,
 	riseSpeed = 10,
-	font = Fonts.betterPixels
+	font = Fonts.tiny
 }
 
 function bubbles:add(t, x, y, r,g,b)
@@ -24,6 +24,10 @@ function bubbles:update(dt)
 		v.y = v.y - self.riseSpeed * dt
 	end
 	
+end
+
+function bubbles:clear()
+	self.bubbles = {}
 end
 
 function bubbles:draw()

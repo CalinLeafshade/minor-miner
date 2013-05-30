@@ -3,13 +3,13 @@ ZoneBanner = require('module'):new("zonebanner")
 ZoneBanner.Priority = -99999
 
 function ZoneBanner:Init()
-    self.Sizes = {12,16,100,128,160}
-    self.YOffset = {0,0,150,180,220}
+    --self.Sizes = {12,16,100,128,160}
+    --self.YOffset = {0,0,150,180,220}
     
 end
 
 function ZoneBanner:ConfigChanged()
-	self.Font = love.graphics.newFont("fonts/banner.ttf", self.Sizes[Config.Scale])
+	self.Font = love.graphics.newFont("fonts/banner.ttf", 16)
 end
 
 function ZoneBanner:Update(dt)
@@ -47,11 +47,15 @@ end
 function ZoneBanner:Draw()
 	local Scale = Config.Scale
     if self.Running then
-        love.graphics.setColor(0,0,0,self.Alpha / 2)
-        love.graphics.rectangle("fill", 0, 120 * Scale, smoothlerp(0,320 * Scale,self.Alpha / 255), 50 * Scale)
-        love.graphics.setColor(255,255,255,self.Alpha)
-        love.graphics.setFont(self.Font)
-        love.graphics.printf(Game.State.LastZone, 0, 140 * Scale - self.YOffset[Scale], 320 * Scale, "center")
+				local lg = love.graphics
+				lg.push()
+				lg.scale(Config.Scale)
+        lg.setColor(0,0,0,self.Alpha / 2)
+        lg.rectangle("fill", 0, 120, smoothlerp(0,320,self.Alpha / 255), 50)
+        lg.setColor(255,255,255,self.Alpha)
+        lg.setFont(self.Font)
+        lg.printf(Game.State.LastZone, 0, 120, 320, "center")
+				lg.pop()
     end
 
 end

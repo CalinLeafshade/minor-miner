@@ -168,10 +168,13 @@ function Player:CollideWithPlatform(object, dx, dy)
 end
 
 function Player:Damage(pwr,dx,dy, dmgType)
+	if self.Invulnerable then return end
 	dmgType = dmgType or "normal"
 	local x,y = self.Collider:center()
 	self:ThrowBack(dx,dy)
-	addBubble(pwr,x,y)
+	addBubble(pwr,x,y - 10,200,0,0)
+	--TODO different damage types
+	self.HP = self.HP - pwr
 end
 
 function Player:ThrowBack(dx, dy, invTime)

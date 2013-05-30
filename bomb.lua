@@ -1,6 +1,55 @@
 
 local vector = require('vector')
 local animation = require('animation')
+
+Debris = 
+{
+	texture = love.graphics.newImage("gfx/debris.png"),
+	quads =
+	{
+		love.graphics.newQuad(0,0,2,3,8,3),
+		love.graphics.newQuad(3,0,2,3,8,3),
+		love.graphics.newQuad(6,0,2,3,8,3)
+	}
+}
+
+function Debris:new(x,y,vx,vy)
+	local o = {}
+	setmetatable(o, self)
+	self.__index = self
+	o.Collider = Game.CWorld:addCircle(x,y, 1)
+	Game.CWorld:addToGroup("particles", o.Collider)
+	o.life = 0
+	o.quad = math.random(3)
+	o.rot = math.random() * 6.28
+	o.Velocity = vector.new(vx or 0, vy or 0)
+	return o
+end
+
+function Debris:kill()
+	Game.CWorld:remove(self.Collider)
+	self.dead = true
+end
+
+function Debris:update(dt)
+	self.life = self.life + dt
+	if self.life > 1 then
+		self:kill()
+		return
+	end
+	self.rot = self.rot + dt * 2
+	Collisions.handle(dt, self, "bounce", 0.5)
+	
+end
+
+function Debris:draw()
+	local x,y = self.Collider:center()
+	local g = math.random(100,200)
+	love.graphics.setColor(g,g,g,lerp(255,0,self.life))
+	love.graphics.drawq(self.texture, self.quads[self.quad], x,y,self.rot)
+	--love.graphics.rectangle("fill",x,y,1,1)
+end
+
 Spark = {}
 
 function Spark:new(x,y,vx,vy)
@@ -26,6 +75,7 @@ function Spark:update(dt)
 			local c,dx,dy = v:collidesWith(self.Collider)
 			if c then
 				self:kill()
+				return
 			end
 		end
 	end
@@ -139,26 +189,28 @@ function Bomb:Update(dt)
 	if x ~= self.lastX or y ~= self.lastY then -- moved
 	
 	
-		if not self.OnGround then
-			self.Velocity = self.Velocity + Game.Gravity * dt
-		end
-		
-		local dx, dy = self.Velocity.x * dt, self.Velocity.y * dt
-		if dx ~= dx then dx = 0 end
-		if dy ~= dy then dy = 0 end
-		
-		self.Collider:move(dx,dy)
-		
-		--for i,v in ipairs(Room.Current.Platforms or {}) do
-		for v in pairs(self.Collider:neighbors()) do
-			
-				if v.Object and v.Object.Type == "platform" then
-					local c,dx,dy = v:collidesWith(self.Collider)
-					if c then
-							self:PlatformCollide(v.Object,-dx,-dy)
-					end
-				end
-		end
+		--if not self.OnGround then
+--			self.Velocity = self.Velocity + Game.Gravity * dt
+--		end
+--		
+--		local dx, dy = self.Velocity.x * dt, self.Velocity.y * dt
+--		if dx ~= dx then dx = 0 end
+--		if dy ~= dy then dy = 0 end
+--		
+--		self.Collider:move(dx,dy)
+--		
+--		--for i,v in ipairs(Room.Current.Platforms or {}) do
+--		for v in pairs(self.Collider:neighbors()) do
+--			
+--				if v.Object and v.Object.Type == "platform" then
+--					local c,dx,dy = v:collidesWith(self.Collider)
+--					if c then
+--							self:PlatformCollide(v.Object,-dx,-dy)
+--					end
+--				end
+--		end
+
+		Collisions.handle(dt,self,"bounce", 0.5)
 	
 	end
 	self.lastX, self.lastY = x,y
@@ -175,7 +227,12 @@ end
 function Bomb:Explode()
 	self.Animation = self.Animations['explosion']
 	self.State = "explosion"
+	Game:ShakeScreen(0.5)
+	
 	local x,y = self.Collider:center()
+	for i=1,10 do
+		Game.PSM:add(Debris:new(x,y - 3,math.random(-100,100), math.random(-180, -100)))
+	end
 	local blast = Game.CWorld:addCircle(x,y,self.blastRadius)
 	for v in pairs(blast:neighbors()) do
 		if blast:collidesWith(v) then
@@ -184,7 +241,7 @@ function Bomb:Explode()
 				if type(obj.Damage) == "function" then
 					local xx,yy = v:center()
 					local vec = vector.new(xx - x,yy - y):normalized() * 300
-					obj:Damage(30, vec.x, vec.y,"explosive")
+					obj:Damage(3, vec.x, vec.y,"explosive")
 				end
 			end
 		end
