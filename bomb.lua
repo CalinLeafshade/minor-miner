@@ -33,12 +33,12 @@ end
 
 function Debris:update(dt)
 	self.life = self.life + dt
-	if self.life > 1 then
+	if self.life > 0.5 then
 		self:kill()
 		return
 	end
 	self.rot = self.rot + dt * 2
-	Collisions.handle(dt, self, "bounce", 0.5)
+	Collisions.handle(dt, self, "bounce", math.random() / 2)
 	
 end
 
@@ -46,8 +46,8 @@ function Debris:draw()
 	local x,y = self.Collider:center()
 	local g = math.random(100,200)
 	love.graphics.setColor(g,g,g,lerp(255,0,self.life))
-	love.graphics.drawq(self.texture, self.quads[self.quad], x,y,self.rot)
-	--love.graphics.rectangle("fill",x,y,1,1)
+	--love.graphics.drawq(self.texture, self.quads[self.quad], x,y,self.rot)
+	love.graphics.rectangle("fill",x,y,1,1)
 end
 
 Spark = {}
@@ -131,8 +131,12 @@ Bomb =
 		{12,8},
 		{11,10}
 	},
-	blastRadius = 10
-	
+	blastRadius = 10,
+	sprites = 
+	{
+		bomb = love.graphics.newImage("gfx/bomb.png"),
+		explosion = love.graphics.newImage("gfx/explosion.png")
+	}
 }
 
 function Bomb:new(o)
@@ -141,8 +145,8 @@ function Bomb:new(o)
 	self.__index = self
 	o.Animations = 
 		{
-			bomb = animation:new("gfx/bomb.png", 15, 13, {Speed = 0.5}),
-			explosion = animation:new("gfx/explosion.png", 30, 39, {Speed = 0.07, Offset = {15,32}}),
+			bomb = animation:new(self.sprites.bomb, 15, 13, {Speed = 0.5}),
+			explosion = animation:new(self.sprites.explosion, 30, 39, {Speed = 0.07, Offset = {15,32}}),
 		}
 	o.Animation = o.Animations["bomb"]
 	o.Velocity = o.Velocity or vector.new(0,0)
@@ -230,8 +234,10 @@ function Bomb:Explode()
 	Game:ShakeScreen(0.5)
 	
 	local x,y = self.Collider:center()
-	for i=1,10 do
-		Game.PSM:add(Debris:new(x,y - 3,math.random(-100,100), math.random(-180, -100)))
+	for i=1,30 do
+		local vec = vector.new(math.random() - 0.5, -math.random() / 2):normalized()
+		vec = vec * math.random(200,400)
+		Game.PSM:add(Debris:new(x,y - 3,vec.x,vec.y))
 	end
 	local blast = Game.CWorld:addCircle(x,y,self.blastRadius)
 	for v in pairs(blast:neighbors()) do

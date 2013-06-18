@@ -163,7 +163,8 @@ function Game:Update(dt, focus)
 				
 				if self.screenShakeTimer > 0 then
 					if love.timer.getTime() - self.screenShakeLastUpdate > 0.05 then
-						self.screenShakeOffset = self.screenShakeOffset >= 0 and -math.random(3) or math.random(3)
+						local s = self.screenShakeTimer * 10
+						self.screenShakeOffset = self.screenShakeOffset >= 0 and -math.random(s) or math.random(s)
 						self.screenShakeLastUpdate = love.timer.getTime()
 					end
 					log("shakeScreen","ss",  self.screenShakeOffset)
@@ -197,41 +198,39 @@ end
 
 
 function Game:Draw(focus)
-    if self.Visible then        
-        love.graphics.setCanvas(self.Canvas)
-        love.graphics.clear()
-        love.graphics.setColor(0,0,0)
-        love.graphics.rectangle("fill",0,0,320,180)
-        love.graphics.push()
-        love.graphics.translate(-self.Viewport.x, -self.Viewport.y)
-        love.graphics.setColor(255,255,255)
+    if self.Visible then
+		local lg = love.graphics
+        lg.setCanvas(self.Canvas)
+        lg.clear()
+        lg.setColor(0,0,0)
+        lg.rectangle("fill",0,0,320,180)
+        lg.push()
+        lg.translate(-self.Viewport.x, -self.Viewport.y)
+        lg.setColor(255,255,255)
         self.Water:PreDraw()
         if Room.Current then
             Room.Current:PreBackgroundDraw()
             Room.Current:DrawBackground()
-						
             Room.Current:PrePlayerDraw()
             self.Player:Draw()
-						Room.Current:DrawSceneObjects()
-						self.PSM:draw()
+			Room.Current:DrawSceneObjects()
+			self.PSM:draw()
             Room.Current:PostPlayerDraw()
         end
         self.Bubbles:draw()
-        love.graphics.pop() 
+        lg.pop() 
         self.Water:Draw()
         if Room.Current.Overlay then 
-            love.graphics.draw(Room.Current.Overlay,-self.Viewport.x,-self.Viewport.y) 
+            lg.draw(Room.Current.Overlay,-self.Viewport.x,-self.Viewport.y) 
         end
-				self.Bars:draw()
-        love.graphics.setCanvas()
-        love.graphics.push()
-				love.graphics.translate(Config.xOffset or 0, Config.yOffset or 0)
-        love.graphics.scale(Config.Scale, Config.Scale) 
-        --love.graphics.draw(self.Canvas,Config.xOffset or 0, Config.yOffset or 0)
-				love.graphics.setColor(Color.White:unpack())
-				love.graphics.draw(self.Canvas,0,0)
-				
-        love.graphics.pop() 
+		self.Bars:draw()
+        lg.setCanvas()
+        lg.push()
+		lg.translate(Config.xOffset or 0, Config.yOffset or 0)
+        lg.scale(Config.Scale, Config.Scale) 
+        lg.setColor(Color.White:unpack())
+		lg.draw(self.Canvas,0,0)
+        lg.pop() 
     end
 end
 

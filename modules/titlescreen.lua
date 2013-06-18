@@ -82,7 +82,7 @@ Menus[2] =
 			Name = "scale",
 			Text = "Scale Factor",
 			Type = "selector",
-			Choices = {1,2,3,4,5}
+			Choices = {1,2,3,4,5,6,7,8}
 		},
 		{ 
 			Name = "fullscreen",
@@ -167,9 +167,10 @@ Menus[3] =
 
 
 function TitleScreenModule:Init()
+	self.Font = Fonts.betterPixels
     self.Menu = 1
-		self.Selected = 1
-		self:ShowMenu("main")
+	self.Selected = 1
+	self:ShowMenu("main")
     ModCon:Focus(self)
 end
 
@@ -212,22 +213,27 @@ end
 function TitleScreenModule:Draw(focus)
     if not focus then return end
 		local spacing = 15
-		local w = 320 * Config.Scale
-		local h = 200 * Config.Scale
-		love.graphics.setColor(0,0,0,128)
-		love.graphics.rectangle("fill",0,0,w,h)
+		local w = 320
+		local h = 180
+		local lg = love.graphics
+		lg.push()
+		lg.setFont(self.Font)
+		lg.scale(Config.Scale, Config.Scale)
+		lg.setColor(0,0,0,128)
+		lg.rectangle("fill",0,0,w,h)
 		for i,v in ipairs(Menus[self.Menu].Items) do
 			local c = self.Selected == i and {255,255,255} or {128,128,128}
 			love.graphics.setColor(unpack(c))
 			if v.Type == "label" then
-				love.graphics.printf(v.Text, 0, 100 + (spacing * i), 320 * Config.Scale, "center")
+				lg.printf(v.Text, 0, 40 + (spacing * i), w, "center")
 			elseif v.Type == "selector" then
 				local text = v.Text .. "   -   " .. v.Choices[v.Value or 1]
-				love.graphics.printf(text, 0, 100 + (spacing * i), 320 * Config.Scale, "center")
+				lg.printf(text, 0, 40 + (spacing * i), w, "center")
 				--love.graphics.print(v.Text, w/2 - 50, 100 + (spacing * i))
 				--love.graphics.print(v.Choices[v.Value or 1], w/2 + 50, 100 + (spacing * i))
 			end
 		end
+		lg.pop()
 end
 
 function TitleScreenModule:Select()

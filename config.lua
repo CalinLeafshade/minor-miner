@@ -43,12 +43,16 @@ function Config:InitGfx()
 			local w, h = 320 * self.Scale, 180 * self.Scale
 			
 			if self.Fullscreen then
+				w,h = 320,180
 				local modes = love.graphics.getModes()
+				local set = false
 				table.sort(modes, function(a,b) return a.width < b.width end)
 				for i,v in ipairs(modes) do
 					
-					local set = false
+					
 					if v.width >= w and v.height >= h and v.width / v.height == w / h then
+						self.Scale = math.floor(v.height / h)
+						w,h = w * self.Scale, h * self.Scale
 						self.xOffset = ((v.width - w) / 2)
 						self.yOffset = ((v.height - h) / 2)
 						w = v.width
@@ -58,6 +62,7 @@ function Config:InitGfx()
 					end
 					if set then break end
 				end
+				if not set then self.Fullscreen = false end
 			end
 
 			love.graphics.setMode(w,h, self.Fullscreen, self.VSync, self.FSAA) 

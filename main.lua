@@ -1,7 +1,7 @@
 -- main.lua
 -- Entry point
 
-Fonts = require('fonts')
+
 Input = require('input')
 require('util')
 require('color')
@@ -15,12 +15,13 @@ function love.load()
     
     if arg[#arg] == "-debug" then require("mobdebug").start() end
     love.graphics.setDefaultImageFilter("nearest", "nearest")
+	Fonts = require('fonts')
     love.mouse.setVisible(false)
     ModCon = require("ModCon")
-		ModCon:LoadModules()
-		Config:Init()
-		Config:InitGfx()
-		ModCon:Init()
+	ModCon:LoadModules()
+	Config:Init()
+	Config:InitGfx()
+	ModCon:Init()
 		
 end
 

@@ -5,7 +5,11 @@ function Animation:new(filename, width, height, opts)
     o = opts or {}
     setmetatable(o, self)
     self.__index = self
-    o.Image = love.graphics.newImage(filename)
+	if type(filename) == "string" then
+		o.Image = love.graphics.newImage(filename)
+	else
+		o.Image = filename
+	end
     o.Count = o.Image:getWidth() / width 
     o.Width = width
     o.Height = height

@@ -3,7 +3,7 @@
 MapScreen = require('module'):new("mapscreen")
 
 function MapScreen:Init()
-    self.Scale = 0.1
+    self.Scale = 0.04
 end
 
 function MapScreen:BuildMap()
@@ -66,23 +66,27 @@ function MapScreen:Draw(focus)
     if not focus then return end
 
     local lg = love.graphics
-		local Scale = Config.Scale
+	local Scale = Config.Scale
+	
     lg.setColor(0,0,0,128)
     lg.rectangle("fill",0,0,lg.getWidth(), lg.getHeight())
 
     lg.push()
-    lg.translate(160 * Scale + (-self.X  * self.Scale - self.Width * self.Scale / 2), 100 * Scale) -- centre map
-    
-
+	lg.scale(Config.Scale)
+    lg.translate(160 + (-self.X  * self.Scale - self.Width * self.Scale / 2), 90) -- centre map
+    --lg.translate(160 + (-self.X  - self.Width), 100) -- centre map
+	lg.setLineStyle("rough")
     for i,v in pairs(self.Map) do
         lg.setColor(0,0,255)
         lg.rectangle("fill", v.X * self.Scale, v.Y * self.Scale, v.Width * self.Scale, v.Height * self.Scale)
-        lg.setColor(255,255,255)
-        lg.rectangle("line", v.X * self.Scale, v.Y * self.Scale, v.Width * self.Scale, v.Height * self.Scale)
+        
         if i == Room.Current.Name then
             lg.setColor(0,128,255, (math.sin(love.timer.getTime() * 4) + 1) / 2 * 255)
             lg.rectangle("fill", v.X * self.Scale, v.Y * self.Scale, v.Width * self.Scale, v.Height * self.Scale)
         end
+		lg.setColor(255,255,255)
+        lg.rectangle("line", v.X * self.Scale, v.Y * self.Scale, v.Width * self.Scale, v.Height * self.Scale)
+		
     end
 
     --now draw the exits
