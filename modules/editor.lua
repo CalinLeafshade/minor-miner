@@ -25,7 +25,7 @@ end
 function Editor:Draw(focus)
     
     if focus then
-        --love.graphics.setLineWidth(Scale)
+        love.graphics.setLineWidth(Config.Scale)
         --Draw platforms
         for i,v in ipairs(Room.Current.Platforms) do
             --local c = self.Selected == v and self.Colors["selected"] or self.Colors[v.Mode]
@@ -60,22 +60,28 @@ function Editor:Draw(focus)
 				love.graphics.polygon("line", unpack(v))
 			end
 		end
-        
+        local mx,my = love.mouse.getPosition()
         if self.DrawMode == "box" then -- build verts for drawing
             if self.TopLeft then
-                local mx,my = love.mouse.getPosition()
+                
                 local mx, my = toRoom(mx,my, true)
                 local v = {self.TopLeft[1], self.TopLeft[2], self.TopLeft[1], my, mx, my, mx, self.TopLeft[2]}
                 self.Verts = v
             end
         end
         
+		love.graphics.setPointSize(Config.Scale)
+		mx,my = toScreen(toRoom(mx,my))
+		
+		love.graphics.point(mx + Config.Scale / 2, my + Config.Scale / 2)
+		
         if #self.Verts > 0 then
             love.graphics.setColor(128,128,128)
             local v = deepcopy(self.Verts)
             for i = 1, #v do
                 local x,y = toScreen(v[i],v[i])
                 v[i] = i % 2 == 1 and x or y
+				v[i] = v[i] + Config.Scale / 2
             end
 
             if #v == 2 then 
@@ -327,12 +333,20 @@ function Editor:NewCollider()
     self.Mode = "new"
 end
 
+function Editor:Clear()
+	local p = Room.Current.Platforms
+	for i,v in ipairs(p) do
+		Game.CWorld:remove(v.Collider)
+	end
+	Room.Current.Platforms = {}
+end
+
 function Editor:DeleteCollider()
     if self.Selected then
         local p = Room.Current.Platforms
         for i,v in ipairs(p) do
             if v == self.Selected then
-                Game.CWorld:remove(p.Collider)
+                Game.CWorld:remove(v.Collider)
                 table.remove(p,i)
             end
         end

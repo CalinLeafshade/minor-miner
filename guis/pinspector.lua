@@ -19,6 +19,7 @@ pinspector.platformBarLayout = gui.layout:new({margin = 0, spacing = 5, border =
 pinspector.btnSelectPlatform = gui.button:new({x=0,y=0, width = 64, height = 20, text="Select"}, pinspector.platformBarLayout)
 pinspector.btnNewPlatform = gui.button:new({x=0,y=0, width = 64, height = 20, text="New"}, pinspector.platformBarLayout)
 pinspector.btnDeletePlatform = gui.button:new({x=0,y=0, width = 64, height = 20, text="Delete"}, pinspector.platformBarLayout)
+pinspector.btnClearPlatforms = gui.button:new({x=0,y=0, width = 64, height = 20, text="Clear"}, pinspector.platformBarLayout)
 
 gui.hline:new(nil, pinspector.platformLayout)
 
@@ -49,6 +50,10 @@ pinspector.txtEnemyY = gui.textbox:new({x=0,y=0,label="Y: ", width = 100, height
 
 pinspector.btnSave = gui.button:new({x = 0,y=0,width = 215,height = 30, text = "Save Room"}, pinspector.mainLayout)
 
+
+function pinspector.btnClearPlatforms:onClick()
+	Editor:Clear()
+end
 
 function pinspector.btnSpawn:onClick()
 	Enemy.Spawn(pinspector.spawnSelector.choices[pinspector.spawnSelector.selectedIndex], Game.Viewport.x + 160, Game.Viewport.y + 100)

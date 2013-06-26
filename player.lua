@@ -291,13 +291,15 @@ function Player:Update(dt)
 
 		self.Skidding = self.Skidding and self.OnGround
 
+	
+
     if Input:Is("melee") then
         if self:CanAttack() then self:Melee() end
     end
   
-		if Input:Is("bomb") then
-			self:Bomb(not Input:Is("down"))
-		end
+	if Input:Is("bomb") then
+		self:Bomb(not Input:Is("down"))
+	end
 		
     if Input:Is("up") and self.CanSave() then
         Game:Save()
@@ -338,7 +340,8 @@ function Player:Update(dt)
         self.Velocity = self.Velocity - (Game.Gravity * 0.3) * dt
     end
         
-      
+    self.Acceleration.y = 0
+	
     if self:CanMove() then
         self.Acceleration.x = 0
         if Input:Is("left") then
@@ -363,6 +366,14 @@ function Player:Update(dt)
         self.Acceleration.y = self.Acceleration.y * 0.75
     end
   
+	if Input:Is("jetpack") then
+		self.OnGround = false
+		local jetpackForce = lerp(-1600,-1100, clamp(-self.Velocity.y / 100,-1,1))
+		self.Acceleration.y = self.Acceleration.y + jetpackForce
+	end
+	
+	log ("aa", tostring(self.Acceleration))
+	
     self.Velocity = self.Velocity + self.Acceleration * dt
   
     local maxS = self.InWater and self.MaxSpeed * 0.5 or self.MaxSpeed
@@ -375,7 +386,7 @@ function Player:Update(dt)
     
     local termV = self.InWater and self.TerminalVel * 0.25 or self.TerminalVel
     
-    self.Velocity.y = math.min(self.Velocity.y, termV)
+    self.Velocity.y = clamp(self.Velocity.y, -300, termV)
     
     self.Collider:move(self.Velocity.x * dt, self.Velocity.y * dt)
 

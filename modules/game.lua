@@ -50,6 +50,7 @@ function Game:ChangeRoom(roomName, edge, enMult, exMult)
         elseif edge == "right" then
             self.Player.Collider:move(-last:Width(), (exMult - enMult) * 180)
         elseif edge == "top" then
+			log(nil,"moved", (exMult - enMult) * 320, h)
             self.Player.Collider:move((exMult - enMult) * 320, h)
         elseif edge == "bottom" then
             self.Player.Collider:move((exMult - enMult) * 320, -last:Height())

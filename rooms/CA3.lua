@@ -10,7 +10,7 @@ CA3.Zone = "The Caverns"
 
 CA3:AddExit("right", "CA2")
 CA3:AddExit("bottom", "CA4")
---CA3:AddExit("left", "CA16")
+CA3:AddExit("left", "CA16")
 
 return CA3
 

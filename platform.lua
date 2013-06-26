@@ -20,7 +20,7 @@ function Platform:new (...)
     
     local rw = Room.Current:Width()
     local rh = Room.Current:Height()
-
+	--[[
     for i,v in ipairs(params) do -- extend platforms
         if i % 2 == 1 then -- x
             if v == 0 then
@@ -36,6 +36,7 @@ function Platform:new (...)
             end
         end
     end
+	]]--
     o.Collider = Game.CWorld:addPolygon(unpack(params))
 		Game.CWorld:addToGroup("platforms",o.Collider)
     o.Collider.Object = o

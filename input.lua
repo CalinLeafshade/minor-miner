@@ -6,12 +6,13 @@ local Input =
     {
         jump="z",
         melee="x",
-				bomb="c",
+		bomb="c",
         left="left",
         right="right",
-				down="down",
+		down="down",
         menu="escape",
-        up = "up"
+        up = "up",
+		jetpack="a",
     },
     state = {},
     lastState = {}

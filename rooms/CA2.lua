@@ -14,10 +14,7 @@ CA2:AddExit("left", "CA3")
 --funcs
 
 function CA2:Enter()
-	self.NormalMap = love.graphics.newImage("gfx/backgrounds/CA2-Normal.png")
-	if not self.Lighting then
-		self.Lighting = love.graphics.newImage("gfx/backgrounds/CA2-Lighting.png")
-	end
+
 end
 
 function CA2:Update(dt)

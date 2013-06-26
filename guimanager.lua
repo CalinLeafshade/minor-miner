@@ -91,6 +91,7 @@ function GuiManager:Update(dt)
 end
 
 function GuiManager:Draw()
+	love.graphics.setLineWidth(1)
     for i,v in ipairs(self.guis) do
         v:draw()
     end
