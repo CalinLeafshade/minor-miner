@@ -40,7 +40,7 @@ function Bat:DebugDraw(selected)
 end
 
 function Bat:Update(dt)
-	self.Animation = self.Animations[self.state]
+	self.Animation = self.Animations[self.State]
 	self.Animation:Update(dt)
 	if self.State == "rest" then
 		if vector.distance(Game.Player:Position(), self:Position()) <= self.Parameters.wakeDistance then

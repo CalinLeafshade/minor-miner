@@ -162,7 +162,7 @@ function Game:Update(dt, focus)
 				self.screenShakeTimer = math.max(self.screenShakeTimer - dt,0)
         self:ClampViewport()
 				
-				if self.screenShakeTimer > 0 then
+				if self.screenShakeTimer > 0.1 then
 					if love.timer.getTime() - self.screenShakeLastUpdate > 0.05 then
 						local s = self.screenShakeTimer * 10
 						self.screenShakeOffset = self.screenShakeOffset >= 0 and -math.random(s) or math.random(s)
