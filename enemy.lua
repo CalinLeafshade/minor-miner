@@ -29,6 +29,15 @@ function Enemy:HitWall(dx)
 	
 end
 
+function Enemy:Position()
+	local x,y = self.Collider:center()
+	return vector.new(x,y)
+end
+
+function Enemy:DebugDraw()
+	Editor:DrawPolygon(self.Collider._polygon)
+end
+
 function Enemy:PlatformCollide(object,dx,dy)
 	self.CollVec.x = dx
     self.CollVec.y = dy
@@ -118,6 +127,15 @@ function Enemy:ResolveAndMove(dt)
 		
 end
 
+function Enemy:CheckCollisions(callback)
+	for i,v in pairs(Room.Current.Platforms or {}) do
+        local c,dx,dy = v.Collider:collidesWith(self.Collider)
+        if c then
+            callback(v,-dx,-dy)
+        end
+    end
+end
+
 function Enemy:Update(dt)
 	self:ResolveAndMove(dt)
 end
@@ -142,6 +160,7 @@ function Enemy.Spawn(name, x, y)
 	local e = EnemyTypes[name]:new()
 	e:MoveTo(x,y)
 	Room.Current:AddObject(e)
+	return e
 end
 
 

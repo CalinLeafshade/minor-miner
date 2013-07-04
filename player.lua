@@ -35,7 +35,6 @@ end
 local Player = 
 {
     CollVec = vector.new(0,0),
-    Position = vector.new(160,100),
     Velocity = vector.new(0,0),
     Acceleration = vector.new(0,0),
     Collider = Game.CWorld:addRectangle(160,100, 10,20),
@@ -286,6 +285,10 @@ function Player:Bomb(throw)
 	Room.Current:AddObject(Bomb:new({Velocity = v, x=x,y=y}))
 end
 
+function Player:Position()
+	local x,y = self.Collider:center()
+	return vector.new(x,y)
+end
 
 function Player:Update(dt)
 
@@ -419,7 +422,7 @@ function Player:Update(dt)
     
     self:Animate(dt)
     
-    self.Position.x, self.Position.y = self.Collider:center()
+    
 
     if self.InvTimer > 0 and not self.Hurt then
         self.InvTimer = self.InvTimer - dt

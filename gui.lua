@@ -11,6 +11,7 @@ gui =
     borderColor = Color.LightGrey,
     titleBarHeight = 20,
 	font = love.graphics.newFont(12)
+	
 }
 
 function gui:new(o)
@@ -21,6 +22,10 @@ function gui:new(o)
     o.controls = {}
     manager:add(o)
     return o
+end
+
+function gui:lostFocus()
+	
 end
 
 function gui:mouseLeave()
@@ -151,6 +156,7 @@ function gui.control:new(o)
     o.mouseDown = nullFunc
     o.mouseUp = nullFunc
     o.keyDown = nullFunc
+	o.lostFocus = nullFunc
 		o.type = "control"
 		o.visible = true
     setmetatable(o, { __index = self})
@@ -385,6 +391,10 @@ function gui.layout:new(o, parent)
 	o.border = o.border == null and true or o.border
 	o.controls = {}
 	return o
+end
+
+function gui.layout:clear()
+	self.controls = {}
 end
 
 function gui.layout.__tostring()

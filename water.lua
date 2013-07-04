@@ -31,7 +31,7 @@ end
 function Water:Update(dt)
     self.LastBubble = self.LastBubble - dt
     if Game.Player.InWater and self.LastBubble <= 0 then
-        local mx, my = Game.Player.Position.x, Game.Player.Position.y - 9
+        local mx, my = Game.Player.Collider:center()
         mx = Game.Player:Direction() and mx - 5 or mx
         self.LastBubble = math.random(0.5,3)
         self:SpawnBubble({Game.Player.Water:bbox()}, mx, my)

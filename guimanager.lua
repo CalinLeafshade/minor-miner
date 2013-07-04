@@ -61,6 +61,9 @@ function GuiManager:OnClick(x,y,mb)
 end
 
 function GuiManager:setFocus(control)
+	if self.focussedControl and self.focussedControl ~= control then
+		self.focussedControl:lostFocus()
+	end
     self.focussedControl = control
 end
 

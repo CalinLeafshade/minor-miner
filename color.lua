@@ -41,4 +41,5 @@ Color.DarkBlue = Color.FromRGBA(0,0,128)
 Color.LightGrey = Color.FromRGBA(200,200,200)
 Color.DarkGrey = Color.FromRGBA(100,100,100)
 Color.White = Color.FromRGBA(255,255,255)
+Color.Blue = Color.FromRGBA(0,0,200)
 

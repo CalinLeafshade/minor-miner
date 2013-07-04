@@ -47,6 +47,7 @@ pinspector.enemyXYLayout = gui.layout:new({x=0,y=0,direction="horizontal",margin
 pinspector.txtEnemyX = gui.textbox:new({x=0,y=0,label="X: ", width = 100, height = 20, text = ""}, pinspector.enemyXYLayout)
 pinspector.txtEnemyY = gui.textbox:new({x=0,y=0,label="Y: ", width = 100, height = 20, text = ""}, pinspector.enemyXYLayout)
 
+pinspector.enemyParamsLayout = gui.layout:new({x=0,y=0,direction="vertical",margin=0,border=false,text="Parameters"}, pinspector.enemySelectLayout)
 
 pinspector.btnSave = gui.button:new({x = 0,y=0,width = 215,height = 30, text = "Save Room"}, pinspector.mainLayout)
 

@@ -45,6 +45,16 @@ function Room:Save()
 	
 	data.enemies = {}
 	
+	for _,v in pairs(self.SceneObjects) do
+		if v.Type == "enemy" then
+			local e = {}
+			e.Name = v.Name
+			e.Parameters = v.Parameters
+			e.X,e.Y = v.Collider:center()
+			table.insert(data.enemies, e)
+		end
+	end
+	
 	data = DataDumper(data)
 	
 	local filename = love.filesystem.getWorkingDirectory() .. "/rooms/" .. self.Name .. "def.lua"
@@ -123,8 +133,16 @@ function Room:DrawBackground()
 		
 end
 
-function Room:Init()
+function Room:InitEnemies(data)
+	for i,v in ipairs(data.enemies) do
+		local e = Enemy.Spawn(v.Name,v.X,v.Y)
+		e.Parameters = v.Parameters
+		self:AddObject(e)
+	end
+end
 
+function Room:Init()
+	self.SceneObjects = {}
     local f = love.filesystem.exists("gfx/backgrounds/" .. self.Name .. "-Final.png") and "gfx/backgrounds/" .. self.Name .. "-Final.png" or "gfx/backgrounds/" .. self.Name .. ".png"
     self.Background = love.graphics.newImage(f)
     if love.filesystem.exists("gfx/backgrounds/" .. self.Name .. "-Layer1.png") then
@@ -154,10 +172,11 @@ function Room:Init()
 	if love.filesystem.exists("rooms/" .. self.Name .. "def.lua") then
 		local data = love.filesystem.load("rooms/" .. self.Name .. "def.lua")()
 		self:InitPlatforms(data)
+		self:InitEnemies(data)
 	else
 		self:InitialisePlatforms()
 	end
-	self.SceneObjects = {}
+	
 end
 
 function Room:InitPlatforms(data)

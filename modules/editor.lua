@@ -42,22 +42,16 @@ function Editor:Draw(focus)
         end
 		
 		--draw enemy colliders
-		for i,p in ipairs(Room.Current.Enemies or {}) do
-			love.graphics.setColor(255,0,0)
-			local scale = Config.Scale
-			local v = {p.Collider._polygon:unpack()}
-			for i = 1, #v do
-				if i % 2 == 1 then
-					v[i] = v[i] - Game.Viewport.x
+		for i,p in pairs(Room.Current.SceneObjects) do
+			if p.DebugDraw then
+				p:DebugDraw(self.Selected == p)
+			elseif p.Collider then
+				if self.Selected == p then
+					love.graphics.setColor(unpack(self.Colors['selected']))
 				else
-					v[i] = v[i] - Game.Viewport.y
+					love.graphics.setColor(255,0,0)
 				end
-				v[i] = v[i] * scale + 2
-			end
-			love.graphics.polygon("line", unpack(v))
-			if self.Selected == p then
-				love.graphics.setColor(unpack(self.Colors['selected']))
-				love.graphics.polygon("line", unpack(v))
+				self:DrawPolygon(p.Collider._polygon)
 			end
 		end
         local mx,my = love.mouse.getPosition()
@@ -95,6 +89,20 @@ function Editor:Draw(focus)
         end
         
     end
+end
+
+function Editor:DrawPolygon(p)
+	local scale = Config.Scale
+	local v = {p:unpack()}
+	for i = 1, #v do
+		if i % 2 == 1 then
+			v[i] = v[i] - Game.Viewport.x
+		else
+			v[i] = v[i] - Game.Viewport.y
+		end
+		v[i] = v[i] * scale + 2
+	end
+	love.graphics.polygon("line", unpack(v))
 end
 
 function Editor:Update(focus)
@@ -223,8 +231,33 @@ function Editor:OnKeypress(key)
     Game:ClampViewport()
 end
 
+function Editor:NewSelected(s)
+	self.gui.enemyParamsLayout:clear()
+	if not s then return end
+	if s.Parameters then
+		for i,v in pairs(s.Parameters) do
+			local txt = gui.textbox:new({x=0,y=0,label=i, width = 150, height = 20, text = tostring(v)}, self.gui.enemyParamsLayout)
+			txt.type = type(v)
+			txt.obj = s
+			txt.lostFocus = function(self)
+				if txt.type == "number" then
+					local n = tonumber(self.text)
+					if n then
+						self.obj.Parameters[self.label] = n
+					else
+						self.text = self.obj.Parameters[self.label]
+					end
+				else
+					self.text = self.obj.Parameters[self.label]
+				end
+			end
+		end
+	end
+end
+
 function Editor:SelectAt(mx,my, t)
     local shapes = Game.CWorld:shapesAt(toRoom(mx,my))
+	local last = self.Selected
     if #shapes > 0 then 
 		self.Selected = nil
         for i,v in ipairs(shapes) do
@@ -236,6 +269,9 @@ function Editor:SelectAt(mx,my, t)
     else
         self.Selected = nil
     end
+	if last ~= self.Selected then
+		self:NewSelected(self.Selected)
+	end
 end
 
 function Editor:AddVert(x,y)
