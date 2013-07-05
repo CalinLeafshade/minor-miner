@@ -120,6 +120,11 @@ function Vector:dotp(other)
 	return self.x * other.x + self.y * other.y
 end
 
+function Vector.angle(v1,v2)
+	local dot = v1:dotp(v2)
+	return math.acos(dot)
+end
+
 function Vector:reflect(normal)
 	   
     local l = self:normalized()

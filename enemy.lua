@@ -86,6 +86,10 @@ function Enemy:Damage(pwr, dmgType)
 	
 end
 
+function Enemy:ParameterChanged(name)
+	
+end
+
 function Enemy:ResolveAndMove(dt)
 	if not self.Collider then return end
 	
@@ -146,7 +150,7 @@ function Enemy:Draw(dt)
 		love.graphics.setColor(Color.White:unpack())
 		self.Animation:Draw(x,y)
 	elseif self.Collider then
-		self.Collider:Draw()
+		self.Collider:draw()
 	end
 end
 

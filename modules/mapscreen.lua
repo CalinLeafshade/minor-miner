@@ -11,12 +11,12 @@ function MapScreen:BuildMap()
     local function addRoom(map, room, x, y, exit, lastRoom, enmult, exmult)
         if exit == "left" then
             x = x - room.Width
-            y = y - exmult * 200
-            y = y + enmult * 200
+            y = y - exmult * 180
+            y = y + enmult * 180
         elseif exit == "right" then
             x = x + lastRoom.Width
-            y = y - exmult * 200
-            y = y + enmult * 200
+            y = y - exmult * 180
+            y = y + enmult * 180
         elseif exit == "bottom" then
             y = y + lastRoom.Height
         elseif exit == "top" then
@@ -102,17 +102,17 @@ function MapScreen:Draw(focus)
                 local y2 = y
 
                 if ii == "left" then
-                    y = y + iii * 200
-                    y = y + 200 / 4
-                    y2 = y + 200 / 2
+                    y = y + iii * 180
+                    y = y + 180 / 4
+                    y2 = y + 180 / 2
                 elseif ii == "right" then
-                    y = y + iii * 200 
-                    y = y + 200 / 4
-                    y2 = y + 200 / 2
+                    y = y + iii * 180 
+                    y = y + 180 / 4
+                    y2 = y + 180 / 2
                     x = x + v.Width 
                     x2 = x
                 end
-                    lg.line(x * self.Scale,y * self.Scale,x2 * self.Scale,y2 * self.Scale)
+				lg.line(x * self.Scale,y * self.Scale,x2 * self.Scale,y2 * self.Scale)
                                 
             end
         end

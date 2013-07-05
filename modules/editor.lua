@@ -91,6 +91,12 @@ function Editor:Draw(focus)
     end
 end
 
+function Editor:DrawLine(x1,y1,x2,y2)
+	x1,y1 = toScreen(x1,y1)
+	x2,y2 = toScreen(x2,y2)
+	love.graphics.line(x1,y1,x2,y2)
+end
+
 function Editor:DrawPolygon(p)
 	local scale = Config.Scale
 	local v = {p:unpack()}
@@ -244,6 +250,7 @@ function Editor:NewSelected(s)
 					local n = tonumber(self.text)
 					if n then
 						self.obj.Parameters[self.label] = n
+						self.obj:ParameterChanged(self.label)
 					else
 						self.text = self.obj.Parameters[self.label]
 					end

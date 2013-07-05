@@ -58,7 +58,7 @@ end
 function Animation:Draw(x,y)
     if self.Frame > self.Count then self.Frame = 1 end
     local flip = self.Flipped and -1 or 1
-    love.graphics.drawq(self.Image, self.Quads[self.Frame], x, y,0,flip,1,self.Offset[1], self.Offset[2])
+    love.graphics.drawq(self.Image, self.Quads[self.Frame], x, y, self.Rotation or 0,flip,1,self.Offset[1], self.Offset[2])
 end
 
 return Animation
