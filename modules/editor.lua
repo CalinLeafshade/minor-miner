@@ -45,7 +45,7 @@ function Editor:Draw(focus)
 		for i,p in pairs(Room.Current.SceneObjects) do
 			if p.DebugDraw then
 				p:DebugDraw(self.Selected == p)
-			elseif p.Collider then
+			elseif p.Collider._polygon then
 				if self.Selected == p then
 					love.graphics.setColor(unpack(self.Colors['selected']))
 				else
@@ -342,6 +342,7 @@ function Editor:GotFocus()
 end
 
 function Editor:LostFocus()
+	self.gui.enemyParamsLayout:clear()
     self.Mode = "select"
     self.Verts = {}
 	self.gui.visible = false

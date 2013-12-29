@@ -90,6 +90,8 @@ function Enemy:ParameterChanged(name)
 	
 end
 
+
+
 function Enemy:ResolveAndMove(dt)
 	if not self.Collider then return end
 	
@@ -138,6 +140,10 @@ function Enemy:CheckCollisions(callback)
             callback(v,-dx,-dy)
         end
     end
+	local c,dx,dy = Game.Player.Collider:collidesWith(self.Collider)
+	if c then
+		callback(Game.Player,-dx,-dy)
+	end
 end
 
 function Enemy:Update(dt)

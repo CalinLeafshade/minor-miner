@@ -187,10 +187,10 @@ end
 
 function Player:CollideWithEnemy(object, dx, dy)
     
-    if self.Invulnerable then return end -- no effect
+    --if self.Invulnerable then return end -- no effect
     
-    self.Collider:move(dx,dy)
-    self:ThrowBack(dx > 0 and 300 or -300, -300, 5)
+    --self.Collider:move(dx,dy)
+    --self:ThrowBack(dx > 0 and 300 or -300, -300, 5)
     --self:Damage(1)
 end
 

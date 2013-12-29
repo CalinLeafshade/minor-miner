@@ -51,8 +51,16 @@ function Bat:Update(dt)
 		self.Collider:move(self.Velocity.x * dt,self.Velocity.y * dt)
 		self:CheckCollisions(function(v,dx,dy)
 				
-				if v.Mode == "allblock" or v.Mode == "water" then
-					self.Collider:move(dx,dy)
+				if v.Type == "platform" then
+				
+					if v.Mode == "allblock" or v.Mode == "water" then
+						self.Collider:move(dx,dy)
+					end
+					
+				elseif v == Game.Player then
+					
+					local x = dx < 0 and 100 or -100
+					v:Damage(5,x,-300)
 				end
 				
 			end)
